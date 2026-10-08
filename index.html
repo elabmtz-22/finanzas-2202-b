@@ -486,7 +486,8 @@ function render(){
     const rows=names.map(d=>{const ini=r2(state.debtsY[y][d]), paid=paidOf(d); ti=r2(ti+ini); tp=r2(tp+paid);
       const left=Math.max(r2(ini-paid),0), pct=ini?Math.min(100,paid/ini*100):0, col=pcol(pct,left);
       const ptxt=(left<=0&&ini>0?100:Math.floor(pct*10)/10)+'%';
-      return '<div class="debt"><div class="top"><span><b>'+esc(d)+'</b><br><span class="muted" style="font-size:14px">Deuda '+mxn(ini)+' · pagado el '+ptxt+'</span></span><span style="text-align:right;color:'+col+';font-weight:700">Pendiente<br>'+mxn(left)+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:14px;margin-top:3px">Pagado: '+mxn(paid)+' de '+mxn(ini)+'</div></div>';}).join('');
+      let cdHtml=''; if(y===String(today.getFullYear())){const cd=left<=0?{t:'Deuda liquidada',c:'var(--inc)',i:'✓ '}:debtCountdown(d); cdHtml='<div style="font-size:15px;margin-top:5px;font-weight:600;color:'+cd.c+'">'+cd.i+cd.t+'</div>';}
+      return '<div class="debt"><div class="top"><span><b>'+esc(d)+'</b><br><span class="muted" style="font-size:14px">Deuda '+mxn(ini)+' · pagado el '+ptxt+'</span></span><span style="text-align:right;color:'+col+';font-weight:700">Pendiente<br>'+mxn(left)+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:14px;margin-top:3px">Pagado: '+mxn(paid)+' de '+mxn(ini)+'</div>'+cdHtml+'</div>';}).join('');
     return '<div style="margin-bottom:22px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-bottom:10px"><b style="font-size:18px">'+y+'</b><span class="muted" style="text-align:right">'+(names.length?('Pendiente '+mxn(Math.max(r2(ti-tp),0))+' de '+mxn(ti)):'')+'</span></div>'
       +(rows||'<div class="empty">Aún no hay deudas de '+y+'. Agrégalas en "Ajuste de presupuesto y deudas".</div>')+'</div>';
   }).join('');
@@ -593,10 +594,27 @@ function monthParts(ym){
   });
   return {parts,noPlan,planDebt};
 }
+function debtCountdown(name){
+  const td=today.getDate(), ymNow=iso(today).slice(0,7), days=daysFor('d:'+name);
+  if(!days.length) return {t:'Sin día de pago definido (agrégalo en Más › Ajustes)',c:'var(--mute)',i:'🗓 '};
+  const mine=monthParts(ymNow).parts.filter(p=>p.kind==='deuda'&&p.name===name);
+  const plural=n=>n+(n===1?' día':' días');
+  let target=null;
+  if(mine.length){
+    const un=mine.filter(p=>!p.paid).sort((a,b)=>a.day-b.day);
+    const od=un.filter(p=>p.day&&p.day<td);
+    if(od.length) return {t:'Vencido hace '+plural(td-od[0].day)+' (día '+od[0].day+')',c:'var(--exp)',i:'! '};
+    const up=un.filter(p=>p.day&&p.day>=td); if(up.length) target=up[0].day;
+  } else { const up=days.filter(d=>d>=td); if(up.length) target=up[0]; }
+  if(target!==null){const d=target-td;
+    return d===0?{t:'Hoy es día de pago (día '+target+')',c:'var(--exp)',i:'! '}:{t:'Faltan '+plural(d)+' para pagar (día '+target+')',c:d<=3?'var(--exp)':'var(--ink)',i:'⏳ '};}
+  const y=today.getFullYear(), m=today.getMonth(), nd=new Date(y,m+1,days[0]), t0=new Date(y,m,td), d=Math.round((nd-t0)/86400000);
+  return {t:'Faltan '+plural(d)+' para el próximo pago (día '+days[0]+' del mes siguiente)',c:'var(--ink)',i:'⏳ '};
+}
 function statusHtml(p,isNow,td){
   if(p.paid) return '<span style="color:var(--inc);font-weight:700">'+(p.kind==='deuda'&&p.left<=0?'✓ Liquidada':'✓ Pagado')+'</span>';
   let txt='Pendiente', warn=false;
-  if(isNow&&p.day){const d=p.day-td; if(d<0){txt='Vencido hace '+(-d)+(d===-1?' día':' días');warn=true;} else if(d===0){txt='Vence hoy';warn=true;} else if(d<=3){txt='Vence en '+d+(d===1?' día':' días');warn=true;}}
+  if(isNow&&p.day){const d=p.day-td; if(d<0){txt='Vencido hace '+(-d)+(d===-1?' día':' días');warn=true;} else if(d===0){txt='Vence hoy';warn=true;} else if(d<=3){txt='Vence en '+d+(d===1?' día':' días');warn=true;} else {txt='Faltan '+d+' días';}}
   return '<span style="color:var(--exp);font-weight:700">'+(warn?'! ':'')+txt+'</span>';
 }
 const partWhen=p=>(p.day?'día '+p.day+' · '+(p.day<=15?'1ª':'2ª')+' quincena':'sin día · 1ª quincena')+(p.of>1?' · parte '+p.part+' de '+p.of:'');
@@ -641,11 +659,11 @@ const catsFor=t=>t==='debt'?Object.keys(dyRead(($('tDate').value||iso(today)).sl
 function fillCats(){ const prev=$('tCat').value; const l=catsFor($('tType').value);
   $('tCat').innerHTML=l.length?l.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join(''):'<option value="">Sin deudas en ese año</option>'; if(l.includes(prev)) $('tCat').value=prev; }
 function fillSettings(){
-  $('setBud').innerHTML=CATS.expense.map(c=>'<div class="dcard"><b>'+c+'</b><div class="two" style="margin-top:8px"><div><label>Monto mensual</label><input data-b="'+c+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(state.budget[c]||0)+'"></div><div><label>Tipo</label><select data-ck="'+c+'"><option value="fijo"'+(kindOf(c)==='fijo'?' selected':'')+'>Pago fijo</option><option value="variable"'+(kindOf(c)==='variable'?' selected':'')+'>Gasto variable</option></select></div></div><div style="margin-top:8px"><label>Día(s) de pago (ej. 11 o 15,30)</label><input data-cd="'+c+'" type="text" inputmode="numeric" maxlength="20" placeholder="Sin día" value="'+daysFor('c:'+c).join(',')+'"></div></div>').join('');
+  $('setBud').innerHTML=CATS.expense.map(c=>'<div class="dcard"><b>'+c+'</b><div class="two" style="margin-top:8px"><div><label>Monto mensual</label><input data-b="'+c+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(state.budget[c]||0)+'"></div><div><label>Tipo</label><select data-ck="'+c+'"><option value="fijo"'+(kindOf(c)==='fijo'?' selected':'')+'>Pago fijo</option><option value="variable"'+(kindOf(c)==='variable'?' selected':'')+'>Gasto variable</option></select></div></div><div style="margin-top:8px"><label>Día(s) de pago (ej. 11 o 15,30)</label><input data-cd="'+c+'" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="off" maxlength="20" placeholder="Sin día, ej. 15, 30" value="'+daysFor('c:'+c).join(',')+'"></div></div>').join('');
   const yrs=new Set(Object.keys(state.debtsY)); const cy=new Date().getFullYear(); [cy,cy+1,+cur.slice(0,4),+dYear].forEach(y=>yrs.add(String(y)));
   $('dYear').innerHTML=[...yrs].sort((x,y)=>y-x).map(y=>'<option'+(y===dYear?' selected':'')+'>'+y+'</option>').join('');
   const dd=dyRead(dYear);
-  $('setDebt').innerHTML=Object.keys(dd).map((n,i)=>'<div class="dcard"><div class="top2"><input data-dn="'+i+'" type="text" maxlength="30" value="'+esc(n)+'" aria-label="Nombre de la deuda"><button class="icon" data-dx="'+i+'" aria-label="Quitar deuda">×</button></div><div class="two"><div><label>Saldo al empezar '+dYear+'</label><input data-d="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(dd[n]||0)+'" aria-label="Saldo inicial"></div><div><label>Pago mensual</label><input data-dp="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+((DP(dYear)[n])||0)+'" aria-label="Pago mensual"></div></div><div style="margin-top:8px"><label>Día(s) de pago (ej. 4 o 15,30)</label><input data-dd="'+i+'" type="text" inputmode="numeric" maxlength="20" placeholder="Sin día" value="'+daysFor('d:'+n).join(',')+'"></div></div>').join('')||'<div class="empty">No hay deudas registradas en '+dYear+'.</div>';
+  $('setDebt').innerHTML=Object.keys(dd).map((n,i)=>'<div class="dcard"><div class="top2"><input data-dn="'+i+'" type="text" maxlength="30" value="'+esc(n)+'" aria-label="Nombre de la deuda"><button class="icon" data-dx="'+i+'" aria-label="Quitar deuda">×</button></div><div class="two"><div><label>Saldo al empezar '+dYear+'</label><input data-d="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(dd[n]||0)+'" aria-label="Saldo inicial"></div><div><label>Pago mensual</label><input data-dp="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+((DP(dYear)[n])||0)+'" aria-label="Pago mensual"></div></div><div style="margin-top:8px"><label>Día(s) de pago (ej. 4 o 15,30)</label><input data-dd="'+i+'" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="off" maxlength="20" placeholder="Sin día, ej. 15, 30" value="'+daysFor('d:'+n).join(',')+'"></div></div>').join('')||'<div class="empty">No hay deudas registradas en '+dYear+'.</div>';
   $('exp').value=state.expected;
 }
 
