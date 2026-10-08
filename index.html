@@ -48,7 +48,18 @@ label{font-size:15px;color:var(--mute);display:block;margin-bottom:3px}
 .tx .m{flex:1;min-width:0}
 .tx .m small{display:block;color:var(--mute)}
 .tx .amt{font-weight:700;white-space:nowrap}
-.del{border:1px solid var(--line);background:var(--panel);color:var(--bad);font-size:15px;font-weight:600;cursor:pointer;padding:7px 10px;border-radius:8px;min-height:36px}
+.del{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:50%;cursor:pointer;padding:0;flex:none}
+.del svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+#mdl{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.sheet{background:var(--panel);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px))}
+.sheet h3{margin:0 0 4px;font-size:19px}
+.sheet .sum{color:var(--mute);margin-bottom:16px}
+.sheet button{display:block;width:100%;margin-top:10px;padding:13px;border-radius:10px;font-weight:700;cursor:pointer;border:1px solid var(--line);background:var(--panel)}
+.sheet button.pri{background:var(--accent);color:var(--on);border:0}
+.sheet button.red{color:var(--exp);border-color:var(--exp)}
+.sheet button.redf{background:var(--exp);color:#fff;border:0}
+.sheet button.ghost{border:0;color:var(--mute);font-weight:600}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:24px;font-weight:600;z-index:60;max-width:90%}
 .debt{margin-bottom:14px}
 .debt .top{display:flex;justify-content:space-between;font-size:16px;margin-bottom:5px}
 .bar{height:9px;border-radius:5px;background:var(--line);overflow:hidden}
@@ -270,6 +281,9 @@ details summary{cursor:pointer;font-weight:700;font-size:19px}
 </details>
 </main>
 
+<div id="mdl" hidden role="dialog" aria-modal="true"><div class="sheet" id="mdlBody"></div></div>
+<div id="toast" hidden></div>
+
 <script>
 const CATS={income:['Quincena','Aguinaldo','Fondo de ahorro','Utilidades','Otro'],
 expense:['Celular','Streaming','Iglesia','Comidas y salidas','Transporte','Viajes','Otros'],
@@ -284,6 +298,7 @@ budget:{'Celular':1200,'Streaming':500,'Iglesia':3000,'Comidas y salidas':3000,'
 debtPlanY:{},
 debtsY:{[new Date().getFullYear()]:{'Miriam':0,'Emilio':0,'Plata Card':0,'Préstamo $126,000':0}}});
 const KEY='mis-finanzas-v1';
+const PEN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>';
 const mxn=n=>new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0);
 const VIV={'var(--exp)':'var(--vr)','var(--debt)':'var(--vo)','var(--yel)':'var(--vy)','var(--inc)':'var(--vg)'};
 const bar2=(pct,c0)=>{const col=VIV[c0]||c0; return '<div class="bar2"><b style="background:'+col+'"></b><i style="width:'+Math.max(0,Math.min(100,pct))+'%;background:'+col+'"></i></div>';};
@@ -422,7 +437,7 @@ function render(){
       const left=Math.max(r2(ini-paid),0), pct=ini?Math.min(100,paid/ini*100):0, col=pcol(pct,left);
       const ptxt=(left<=0&&ini>0?100:Math.floor(pct*10)/10)+'%';
       return '<div class="debt"><div class="top"><span><b>'+esc(d)+'</b><br><span class="muted" style="font-size:14px">Deuda '+mxn(ini)+' · pagado el '+ptxt+'</span></span><span style="text-align:right;color:'+col+';font-weight:700">Pendiente<br>'+mxn(left)+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:14px;margin-top:3px">Pagado: '+mxn(paid)+' de '+mxn(ini)+'</div></div>';}).join('');
-    return '<div style="margin-bottom:22px"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><b style="font-size:18px">'+y+'</b><span class="muted">'+(names.length?('Pendiente '+mxn(Math.max(r2(ti-tp),0))+' de '+mxn(ti)):'')+'</span></div>'
+    return '<div style="margin-bottom:22px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-bottom:10px"><b style="font-size:18px">'+y+'</b><span class="muted" style="text-align:right">'+(names.length?('Pendiente '+mxn(Math.max(r2(ti-tp),0))+' de '+mxn(ti)):'')+'</span></div>'
       +(rows||'<div class="empty">Aún no hay deudas de '+y+'. Agrégalas en "Ajuste de presupuesto y deudas".</div>')+'</div>';
   }).join('');
 
@@ -433,7 +448,7 @@ function render(){
   const rowHtml=t=>{
     const col={income:'--inc',expense:'--exp',saving:'--sav',withdraw:'--sav',debt:'--debt',bonoIn:'--inc',bonoOut:'--exp'}[t.type];
     const sign=(t.type==='income'||t.type==='bonoIn'||t.type==='saving')?'+':'−';
-    return '<div class="tx"><i class="dot" style="background:var(--'+col.slice(2)+')"></i><div class="m"><b>'+esc(t.cat)+'</b><small>'+t.date.slice(8)+' '+MN[+t.date.slice(5,7)-1]+' · '+TYPES[t.type]+(t.note?' · '+esc(t.note):'')+'</small></div><div class="amt">'+sign+mxn(t.amount)+'</div><button class="del" data-id="'+t.id+'" aria-label="Eliminar movimiento">Eliminar</button></div>';};
+    return '<div class="tx"><i class="dot" style="background:var(--'+col.slice(2)+')"></i><div class="m"><b>'+esc(t.cat)+'</b><small>'+t.date.slice(8)+' '+MN[+t.date.slice(5,7)-1]+' · '+TYPES[t.type]+(t.note?' · '+esc(t.note):'')+'</small></div><div class="amt">'+sign+mxn(t.amount)+'</div><button class="del" data-id="'+t.id+'" aria-label="Editar o borrar movimiento">'+PEN+'</button></div>';};
   let normal=monthTx.filter(t=>!isEden(t)), eden=monthTx.filter(isEden);
   const NT=['income','expense','saving','withdraw','debt'];
   const showNormal=vf==='all'||NT.includes(vf);
@@ -529,10 +544,36 @@ $('add').onclick=()=>{
   $('tAmt').value='';$('tNote').value='';
   cur=d.slice(0,7); save(); render();
 };
-$('listWrap').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-id]'); if(!b)return; const id=b.dataset.id;
-  const t=state.tx.find(x=>x.id===id); if(!t) return;
-  if(!confirm('¿Eliminar este movimiento?\n'+t.cat+' · '+TYPES[t.type]+' · '+mxn(t.amount))) return;
-  state.tx=state.tx.filter(x=>x.id!==id); save(); render(); say('Movimiento eliminado');});
+let mid=null;
+function toast(m){const t=$('toast'); t.textContent=m; t.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>t.hidden=true,2600);}
+function mdlClose(){$('mdl').hidden=true; mid=null;}
+function mdlShow(stage,msg){
+  const t=state.tx.find(x=>x.id===mid); if(!t){mdlClose();return;}
+  const sign=(t.type==='income'||t.type==='bonoIn'||t.type==='saving')?'+':'−';
+  const sum='<div class="sum"><b>'+esc(t.cat)+'</b> · '+TYPES[t.type]+' · '+t.date.slice(8)+' '+MN[+t.date.slice(5,7)-1]+'<br>'+sign+mxn(t.amount)+(t.note?'<br>'+esc(t.note):'')+'</div>';
+  let body='';
+  if(stage==='menu') body='<h3>¿Qué quieres hacer?</h3>'+sum+'<button class="pri" data-act="edit">Modificar el monto</button><button class="red" data-act="del">Borrar movimiento</button><button class="ghost" data-act="close">Cancelar</button>';
+  if(stage==='edit') body='<h3>Modificar el monto</h3>'+sum+'<label for="mAmt">Nuevo monto</label><input id="mAmt" type="number" min="0" step="0.01" inputmode="decimal" value="'+t.amount+'"><div class="status" style="color:var(--exp)">'+(msg||'')+'</div><button class="pri" data-act="save">Guardar cambio</button><button class="ghost" data-act="menu">Volver</button>';
+  if(stage==='del') body='<h3>¿Seguro que quieres borrarlo?</h3>'+sum+'<p class="muted" style="margin:0">Esta acción no se puede deshacer.</p><button class="redf" data-act="confirm">Sí, borrar</button><button class="ghost" data-act="menu">No, volver</button>';
+  $('mdlBody').innerHTML=body; $('mdl').hidden=false;
+  if(stage==='edit'){const i=$('mAmt'); i.focus(); i.select();}
+}
+$('listWrap').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-id]'); if(!b)return; mid=b.dataset.id; mdlShow('menu');});
+$('mdl').addEventListener('click',e=>{
+  if(e.target.id==='mdl'){mdlClose();return;}
+  const act=e.target.dataset&&e.target.dataset.act; if(!act)return;
+  if(act==='close') mdlClose();
+  else if(act==='menu') mdlShow('menu');
+  else if(act==='edit') mdlShow('edit');
+  else if(act==='del') mdlShow('del');
+  else if(act==='save'){
+    const v=parseFloat($('mAmt').value); if(!(v>0)){mdlShow('edit','Escribe un monto mayor a 0');return;}
+    const t=state.tx.find(x=>x.id===mid); if(t){t.amount=r2(v); save(); render(); toast('Monto actualizado');} mdlClose();
+  } else if(act==='confirm'){
+    state.tx=state.tx.filter(x=>x.id!==mid); save(); render(); mdlClose(); toast('Movimiento borrado');
+  }
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('mdl').hidden) mdlClose();});
 $('setBox').addEventListener('input',e=>{
   const t=e.target, v=r2(parseFloat(t.value)||0);
   if(t.dataset.b) state.budget[t.dataset.b]=v;
