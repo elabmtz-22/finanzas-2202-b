@@ -20,56 +20,56 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 :root[data-theme="dark"]{--bg:#121816;--panel:#1a2320;--ink:#e8efeb;--mute:#97a69f;--line:#2b3731;--inc:#4cc183;--exp:#f07070;--sav:#6a9cf0;--debt:#f5a34b;--yel:#f2cf4a;--vr:#ff3b3b;--vo:#ff9a1a;--vy:#ffe01a;--vg:#2ee86a;--bon:#4fd1d6;--sav2:#8fd0ff;--bad:#ef7a7a;--accent:#4cc1a6;--on:#0b1512}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
+body{font-size:17px;margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
 main{max-width:760px;margin:0 auto;padding:18px 16px 60px}
-h1{font-size:26px;font-weight:800;margin:0;letter-spacing:-.02em}
-h2{font-size:17px;font-weight:700;margin:0 0 10px}
+h1{font-size:28px;font-weight:800;margin:0;letter-spacing:-.02em}
+h2{font-size:19px;font-weight:700;margin:0 0 10px}
 section{padding:22px 0;border-top:1px solid var(--line)}
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:16px}
 .month{display:flex;align-items:center;gap:6px}
 button,select,input{font:inherit;color:var(--ink)}
-.icon{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-size:18px;line-height:1}
+.icon{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-size:20px;line-height:1}
 input,select,textarea{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-height:40px}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .primary{background:var(--accent);color:var(--on);border:0;border-radius:8px;padding:11px 18px;font-weight:700;cursor:pointer;width:100%}
 .link{background:none;border:0;color:var(--accent);cursor:pointer;font-weight:600;padding:6px 0}
 .figs{display:grid;grid-template-columns:repeat(2,1fr);gap:18px 14px}
 @media(min-width:600px){.figs{grid-template-columns:repeat(4,1fr)}}
-.fig b{display:block;font-size:24px;font-weight:800;letter-spacing:-.02em}
-.fig span{color:var(--mute);font-size:13px}
+.fig b{display:block;font-size:25px;font-weight:800;letter-spacing:-.02em}
+.fig span{color:var(--mute);font-size:15px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
-.left{margin-top:18px;padding:12px 14px;border-left:4px solid var(--accent);background:var(--panel);border-radius:0 8px 8px 0;font-size:15px}
+.left{margin-top:18px;padding:12px 14px;border-left:4px solid var(--accent);background:var(--panel);border-radius:0 8px 8px 0;font-size:17px}
 .chart{position:relative;height:250px}
 .chart.tall{height:290px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-label{font-size:13px;color:var(--mute);display:block;margin-bottom:3px}
+label{font-size:15px;color:var(--mute);display:block;margin-bottom:3px}
 .full{grid-column:1/-1}
 .tx{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
 .tx .m{flex:1;min-width:0}
 .tx .m small{display:block;color:var(--mute)}
 .tx .amt{font-weight:700;white-space:nowrap}
-.del{border:1px solid var(--line);background:var(--panel);color:var(--bad);font-size:13px;font-weight:600;cursor:pointer;padding:7px 10px;border-radius:8px;min-height:36px}
+.del{border:1px solid var(--line);background:var(--panel);color:var(--bad);font-size:15px;font-weight:600;cursor:pointer;padding:7px 10px;border-radius:8px;min-height:36px}
 .debt{margin-bottom:14px}
-.debt .top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px}
+.debt .top{display:flex;justify-content:space-between;font-size:16px;margin-bottom:5px}
 .bar{height:9px;border-radius:5px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%}
-.muted{color:var(--mute);font-size:14px}
+.muted{color:var(--mute);font-size:16px}
 .set{display:grid;grid-template-columns:1fr 120px;gap:8px 12px;align-items:center}
-.set label{margin:0;color:var(--ink);font-size:14px}
-.leg{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mute);margin-bottom:6px}
+.set label{margin:0;color:var(--ink);font-size:16px}
+.leg{display:flex;gap:16px;flex-wrap:wrap;font-size:15px;color:var(--mute);margin-bottom:6px}
 svg.ch{width:100%;height:auto;display:block}
-svg .t{fill:var(--mute);font-size:9.5px}
+svg .t{fill:var(--mute);font-size:11px}
 svg .g{stroke:var(--line);stroke-width:1}
 .bar2{position:relative;height:12px;border-radius:6px;overflow:hidden;background:var(--line)}
 .bar2 b{position:absolute;inset:0;opacity:.32}
 .bar2 i{position:relative;display:block;height:100%;border-radius:6px}
 .brow{margin-bottom:14px}
-.brow .top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px}
+.brow .top{display:flex;justify-content:space-between;font-size:16px;margin-bottom:5px}
 .track{position:relative;height:12px;border-radius:6px;background:var(--line)}
 .track i{display:block;height:100%;border-radius:6px}
 .track u{position:absolute;top:-3px;width:2px;height:18px;background:var(--ink);opacity:.55}
 [hidden]{display:none!important}
-table.cmp{width:100%;border-collapse:collapse;font-size:13px}
+table.cmp{width:100%;border-collapse:collapse;font-size:15px}
 .cmp th{color:var(--mute);font-weight:600;text-align:right;padding:6px 4px;border-bottom:1px solid var(--line)}
 .cmp td{padding:9px 4px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
 .cmp th:first-child,.cmp td:first-child{text-align:left}
@@ -79,20 +79,21 @@ table.cmp{width:100%;border-collapse:collapse;font-size:13px}
 .sec{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
 textarea{font:inherit;resize:vertical}
 section.fix{border-top:1px solid var(--line);padding:0}
-h2.fixt{display:block;padding:18px 2px;margin:0;font-weight:800;font-size:15px;letter-spacing:.05em;text-transform:uppercase}
+h2.fixt{display:block;padding:18px 2px;margin:0;font-weight:800;font-size:17px;letter-spacing:.05em;text-transform:uppercase}
 details.acc{border-top:1px solid var(--line)}
-details.acc>summary{display:flex;justify-content:space-between;align-items:center;padding:18px 2px;cursor:pointer;list-style:none;font-weight:800;font-size:15px;letter-spacing:.05em;text-transform:uppercase}
+details.acc>summary{display:flex;justify-content:space-between;align-items:center;padding:18px 2px;cursor:pointer;list-style:none;font-weight:800;font-size:17px;letter-spacing:.05em;text-transform:uppercase}
 details.acc>summary::-webkit-details-marker{display:none}
-details.acc>summary::after{content:'›';font-size:26px;line-height:1;color:var(--mute);transform:rotate(90deg);transition:transform .15s}
+details.acc>summary::after{content:'›';font-size:28px;line-height:1;color:var(--mute);transform:rotate(90deg);transition:transform .15s}
 details.acc[open]>summary::after{transform:rotate(-90deg)}
 .accb{padding:0 0 26px}
 .dcard{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;background:var(--panel)}
 .dcard .top2{display:grid;grid-template-columns:1fr 44px;gap:8px;margin-bottom:8px}
 .dcard .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.sub3{font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);margin:20px 0 10px}
+.sub3{font-weight:800;font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);margin:20px 0 10px}
 .empty{color:var(--mute);padding:10px 0}
-details summary{cursor:pointer;font-weight:700;font-size:17px}
-.status{font-size:12px;color:var(--mute);margin-top:6px}
+details summary{cursor:pointer;font-weight:700;font-size:19px}
+.status{font-size:14px;color:var(--mute);margin-top:6px}
+#bIn,#bOut,#bLeft{font-size:20px!important}
 </style>
 </head>
 <body>
@@ -218,6 +219,8 @@ details summary{cursor:pointer;font-weight:700;font-size:17px}
 <section class="fix" data-k="deudas">
 <h2 class="fixt">Deudas por año</h2>
 <div class="accb">
+  <label for="dView">Ver deudas de</label>
+  <select id="dView" style="margin-bottom:16px"></select>
   <div id="debts"></div>
 </div>
 </section>
@@ -239,7 +242,7 @@ details summary{cursor:pointer;font-weight:700;font-size:17px}
   <div id="listWrap" style="margin-top:8px">
     <div id="list"></div>
     <div id="edenWrap">
-      <h3 style="font-size:16px;margin:24px 0 2px">Edenred</h3>
+      <h3 style="font-size:18px;margin:24px 0 2px">Edenred</h3>
       <div class="muted" id="edenSum"></div>
       <div id="listEden"></div>
     </div>
@@ -256,7 +259,7 @@ details summary{cursor:pointer;font-weight:700;font-size:17px}
   </div>
   <div class="muted" id="bkInfo"></div>
   <div class="status" id="status3"></div>
-  <h2 style="margin-top:20px;font-size:15px">Restaurar un respaldo</h2>
+  <h2 style="margin-top:20px;font-size:17px">Restaurar un respaldo</h2>
   <label for="bkFile">Elegir el archivo de respaldo (.json)</label>
   <input type="file" id="bkFile" accept=".json,application/json,text/plain">
   <label for="bkText" style="margin-top:10px">O pega aquí el texto del respaldo</label>
@@ -296,6 +299,7 @@ function loadState(raw){const s=JSON.parse(JSON.stringify(raw));
   (s.tx||[]).forEach(t=>{if(t.type==='bonoIn'&&t.cat==='Bono de despensa')t.cat='Recarga Edenred';});
   return Object.assign(defaults(),s);}
 let dYear=String(new Date().getFullYear());
+let dViewY='all';
 const DY=y=>state.debtsY[y]||(state.debtsY[y]={});
 const dyRead=y=>state.debtsY[y]||{};
 const DP=y=>(state.debtPlanY||(state.debtPlanY={}))[y]||(state.debtPlanY[y]={});
@@ -375,7 +379,7 @@ function render(){
   let bh='<div class="sub3" style="margin-top:4px">Gastos del mes</div>';
   bh+=cats.length?cats.map(c=>{const bu=r2(state.budget[c]),sp=spent(c),over=sp>bu,done=bu>0&&sp>=bu&&!over,col=done?'var(--inc)':'var(--exp)',pct=bu?Math.min(sp/bu*100,100):0;
     const cap=over?'<span style="color:var(--exp)">Te pasaste por '+mxn(r2(sp-bu))+'</span>':(done?'<span style="color:var(--inc)">Pagado</span>':'Faltan '+mxn(r2(bu-sp)));
-    return '<div class="brow"><div class="top"><span>'+c+'</span><span>'+mxn(sp)+' de '+mxn(bu)+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:12px;margin-top:3px">'+cap+'</div></div>';}).join(''):'<div class="empty">Define tu presupuesto en "Ajuste de presupuesto y deudas".</div>';
+    return '<div class="brow"><div class="top"><span>'+c+'</span><span>'+mxn(sp)+' de '+mxn(bu)+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:14px;margin-top:3px">'+cap+'</div></div>';}).join(''):'<div class="empty">Define tu presupuesto en "Ajuste de presupuesto y deudas".</div>';
   // deudas registradas del año de este mes
   const yr=cur.slice(0,4), dd=dyRead(yr), plan=(state.debtPlanY&&state.debtPlanY[yr])||{};
   let planDebt=0, dh='';
@@ -387,7 +391,7 @@ function render(){
     const pm=r2(plan[n]); planDebt=r2(planDebt+pm);
     const done=left<=0||(pm>0&&paidM>=pm), col=done?'var(--inc)':'var(--exp)', pct=left<=0?100:(pm?paidM/pm*100:0);
     const cap=left<=0?'<span style="color:var(--inc)">Deuda liquidada</span>':(done?'<span style="color:var(--inc)">Pago del mes completo</span> · ':'')+(left>0?'Pendiente de la deuda: '+mxn(left):'');
-    dh+='<div class="brow"><div class="top"><span>'+esc(n)+'</span><span>'+(pm?mxn(paidM)+' de '+mxn(pm):mxn(paidM)+' · sin pago mensual')+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:12px;margin-top:3px">'+cap+'</div></div>';
+    dh+='<div class="brow"><div class="top"><span>'+esc(n)+'</span><span>'+(pm?mxn(paidM)+' de '+mxn(pm):mxn(paidM)+' · sin pago mensual')+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:14px;margin-top:3px">'+cap+'</div></div>';
   });
   bh+='<div class="sub3">Deudas</div>'+(dh||'<div class="empty">No hay deudas registradas en '+yr+'. Agrégalas en "Ajuste de presupuesto y deudas".</div>');
   bh+='<div class="left" style="margin-top:6px">Total planeado del mes: <b>'+mxn(r2(totBud+planDebt))+'</b><br><span class="muted">Gastos '+mxn(totBud)+' + deudas '+mxn(planDebt)+'</span></div>';
@@ -408,15 +412,17 @@ function render(){
   // deudas por año
   const dys=new Set(Object.keys(state.debtsY).filter(y=>Object.keys(state.debtsY[y]).length)); dys.add(cur.slice(0,4));
   const pcol=(pct,left)=>left<=0?'var(--inc)':pct>=75?'var(--yel)':pct>=50?'var(--debt)':'var(--exp)';
-  $('debts').innerHTML=[...dys].sort((x,y)=>y-x).map(y=>{
+  const yl=[...dys].sort((x,y)=>y-x); if(dViewY!=='all'&&!yl.includes(dViewY)) dViewY='all';
+  $('dView').innerHTML='<option value="all"'+(dViewY==='all'?' selected':'')+'>Todos los años</option>'+yl.map(y=>'<option'+(y===dViewY?' selected':'')+'>'+y+'</option>').join('');
+  $('debts').innerHTML=(dViewY==='all'?yl:[dViewY]).map(y=>{
     const names=Object.keys(dyRead(y));
     const paidOf=n=>state.tx.filter(t=>t.type==='debt'&&t.cat===n&&t.date.slice(0,4)===y).reduce((a,t)=>a+Math.round(t.amount*100),0)/100;
     let ti=0,tp=0;
     const rows=names.map(d=>{const ini=r2(state.debtsY[y][d]), paid=paidOf(d); ti=r2(ti+ini); tp=r2(tp+paid);
       const left=Math.max(r2(ini-paid),0), pct=ini?Math.min(100,paid/ini*100):0, col=pcol(pct,left);
       const ptxt=(left<=0&&ini>0?100:Math.floor(pct*10)/10)+'%';
-      return '<div class="debt"><div class="top"><span><b>'+esc(d)+'</b><br><span class="muted" style="font-size:12px">Deuda '+mxn(ini)+' · pagado el '+ptxt+'</span></span><span style="text-align:right;color:'+col+';font-weight:700">Pendiente<br>'+mxn(left)+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:12px;margin-top:3px">Pagado: '+mxn(paid)+' de '+mxn(ini)+'</div></div>';}).join('');
-    return '<div style="margin-bottom:22px"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><b style="font-size:16px">'+y+'</b><span class="muted">'+(names.length?('Pendiente '+mxn(Math.max(r2(ti-tp),0))+' de '+mxn(ti)):'')+'</span></div>'
+      return '<div class="debt"><div class="top"><span><b>'+esc(d)+'</b><br><span class="muted" style="font-size:14px">Deuda '+mxn(ini)+' · pagado el '+ptxt+'</span></span><span style="text-align:right;color:'+col+';font-weight:700">Pendiente<br>'+mxn(left)+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:14px;margin-top:3px">Pagado: '+mxn(paid)+' de '+mxn(ini)+'</div></div>';}).join('');
+    return '<div style="margin-bottom:22px"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><b style="font-size:18px">'+y+'</b><span class="muted">'+(names.length?('Pendiente '+mxn(Math.max(r2(ti-tp),0))+' de '+mxn(ti)):'')+'</span></div>'
       +(rows||'<div class="empty">Aún no hay deudas de '+y+'. Agrégalas en "Ajuste de presupuesto y deudas".</div>')+'</div>';
   }).join('');
 
@@ -510,6 +516,7 @@ function fillSettings(){
 
 $('tType').addEventListener('change',fillCats);
 $('viewF').addEventListener('change',render);
+$('dView').addEventListener('change',e=>{dViewY=e.target.value;render();});
 $('prev').onclick=()=>{cur=shift(cur,-1);render();};
 $('next').onclick=()=>{cur=shift(cur,1);render();};
 $('month').addEventListener('change',e=>{if(e.target.value){cur=e.target.value;render();}});
