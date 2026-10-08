@@ -101,6 +101,11 @@ details.acc[open]>summary::after{transform:rotate(-90deg)}
 .dcard .top2{display:grid;grid-template-columns:1fr 44px;gap:8px;margin-bottom:8px}
 .dcard .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .sub3{font-weight:800;font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);margin:20px 0 10px}
+.pc1{font-size:14px;font-weight:800;fill:var(--ink)}
+.pc2{font-size:10px;fill:var(--mute)}
+.pie svg{width:100%;max-width:230px;height:auto;display:block;margin:0 auto}
+.lg{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
+.lg span{flex:1}.lg small{color:var(--mute);min-width:46px;text-align:right}
 .empty{color:var(--mute);padding:10px 0}
 details summary{cursor:pointer;font-weight:700;font-size:19px}
 .status{font-size:14px;color:var(--mute);margin-top:6px}
@@ -178,6 +183,10 @@ details summary{cursor:pointer;font-weight:700;font-size:19px}
     <div class="fig"><b id="fDebt" style="color:var(--debt)"></b><span><i class="dot" style="background:var(--debt)"></i>Pagué a deudas</span></div>
   </div>
   <div class="left" id="left"></div>
+  <div class="sub3" style="margin-top:22px">Lo que ganaste y a dónde se fue</div>
+  <div class="pie" id="pie1"></div>
+  <div class="sub3" style="margin-top:22px">Lo que planeaste con tu ingreso esperado</div>
+  <div class="pie" id="pie2"></div>
   <h2 style="margin-top:22px">Por mes</h2>
   <div class="leg"><span><i class="dot" style="background:var(--inc)"></i>Gané</span><span><i class="dot" style="background:var(--exp)"></i>Gasté</span><span><i class="dot" style="background:var(--sav)"></i>Ahorré</span></div><div id="cMonths"></div>
 </div>
@@ -191,6 +200,9 @@ details summary{cursor:pointer;font-weight:700;font-size:19px}
     <div class="fig"><b id="bOut" style="color:var(--exp)"></b><span>Gasto</span></div>
     <div class="fig"><b id="bLeft"></b><span>Me quedan (acumulado)</span></div>
   </div>
+  <div class="sub3">Ingresos y gastos del mes</div>
+  <div class="pie" id="pie3"></div>
+  <div class="sub3" style="margin-top:22px">Por mes</div>
   <div class="leg"><span><i class="dot" style="background:var(--inc)"></i>Ingreso</span><span><i class="dot" style="background:var(--exp)"></i>Gasto</span></div>
   <div id="cBono"></div>
 </div>
@@ -349,6 +361,21 @@ function monthsSvg(ms){
   });
   return s+'</svg>';
 }
+function emptyPie(ctr,sub,msg){return '<svg viewBox="0 0 200 200" role="img" aria-label="Gráfica de pastel sin datos"><circle cx="100" cy="100" r="68" fill="none" stroke="var(--line)" stroke-width="32"/><text class="pc1" x="100" y="99" text-anchor="middle">'+ctr+'</text><text class="pc2" x="100" y="115" text-anchor="middle">'+sub+'</text></svg><p class="muted" style="text-align:center">'+msg+'</p>';}
+function pieHtml(sl,ctr,sub){
+  sl=sl.filter(s=>s.v>0); const tot=sl.reduce((a,s)=>a+Math.round(s.v*100),0)/100;
+  if(!(tot>0)) return '';
+  const R=84,r=52,cx=100,cy=100; let a0=-Math.PI/2, paths='';
+  const pt=(an,rad)=>[(cx+rad*Math.cos(an)).toFixed(2),(cy+rad*Math.sin(an)).toFixed(2)];
+  sl.forEach(s=>{const f=s.v/tot, a1=a0+f*2*Math.PI;
+    if(f>=0.9999) paths+='<circle cx="100" cy="100" r="'+(R+r)/2+'" fill="none" stroke="'+s.c+'" stroke-width="'+(R-r)+'"><title>'+s.l+': '+mxn(s.v)+'</title></circle>';
+    else{const [x0,y0]=pt(a0,R),[x1,y1]=pt(a1,R),[x2,y2]=pt(a1,r),[x3,y3]=pt(a0,r),lg=f>.5?1:0;
+      paths+='<path d="M'+x0+' '+y0+' A'+R+' '+R+' 0 '+lg+' 1 '+x1+' '+y1+' L'+x2+' '+y2+' A'+r+' '+r+' 0 '+lg+' 0 '+x3+' '+y3+' Z" fill="'+s.c+'" stroke="var(--bg)" stroke-width="1.5"><title>'+s.l+': '+mxn(s.v)+'</title></path>';}
+    a0=a1;});
+  const svg='<svg viewBox="0 0 200 200" role="img" aria-label="Gráfica de pastel">'+paths+'<text class="pc1" x="100" y="99" text-anchor="middle">'+ctr+'</text><text class="pc2" x="100" y="115" text-anchor="middle">'+sub+'</text></svg>';
+  const lg=sl.map(s=>'<div class="lg"><i class="dot" style="background:'+s.c+'"></i><span>'+s.l+'</span><b>'+mxn(s.v)+'</b><small>'+(Math.round(s.v/tot*1000)/10)+'%</small></div>').join('');
+  return svg+'<div style="margin-top:8px">'+lg+'</div>';
+}
 function bonosSvg(ms){
   const data=ms.map(x=>[VAL(x,'bonoIn'),VAL(x,'bonoOut')]);
   const max=niceMax(Math.max(0,...data.flat())), gw=PW/ms.length, bw=gw*0.36, cols=['--inc','--exp'];
@@ -412,6 +439,25 @@ function render(){
   bh+='<div class="left" style="margin-top:6px">Total planeado del mes: <b>'+mxn(r2(totBud+planDebt))+'</b><br><span class="muted">Gastos '+mxn(totBud)+' + deudas '+mxn(planDebt)+'</span></div>';
   $('cBud').innerHTML=bh;
   $('budNote').textContent='Barra roja: falta por pagar. Barra verde: ya quedó pagado o liquidado.';
+
+  // gráficas de pastel
+  const base1=r2(s.income+s.withdraw), used1=r2(s.expense+s.debt+s.saving), rest1=r2(base1-used1);
+  const sl1=[{l:'Pagos y gastos',v:s.expense,c:'var(--exp)'},{l:'Deudas',v:s.debt,c:'var(--debt)'},{l:'Ahorro',v:s.saving,c:'var(--sav)'},{l:'Sobrante',v:rest1,c:'var(--inc)'}];
+  let p1=pieHtml(sl1,mxn(base1),'ganado');
+  if(!p1) p1=emptyPie(mxn(0),'ganado','Registra tus ingresos y gastos de este mes para ver la gráfica.');
+  else if(rest1<0) p1+='<p class="muted" style="color:var(--exp)">Este mes gastaste, pagaste y ahorraste '+mxn(-rest1)+' más de lo que ganaste.</p>';
+  $('pie1').innerHTML=p1;
+  const exp2=r2(state.expected), free2=r2(exp2-totBud-planDebt);
+  let p2=exp2>0?pieHtml([{l:'Pagos y gastos planeados',v:totBud,c:'var(--exp)'},{l:'Deudas planeadas',v:planDebt,c:'var(--debt)'},{l:'Libre para ahorro',v:free2,c:'var(--sav)'}],mxn(exp2),'ingreso esperado'):'';
+  if(!p2) p2=emptyPie(mxn(0),'ingreso esperado','Define tu ingreso esperado y tus presupuestos en "Ajuste de presupuesto y deudas".');
+  else if(free2<0) p2+='<p class="muted" style="color:var(--exp)">Tus gastos y deudas planeados superan tu ingreso esperado por '+mxn(-free2)+'.</p>';
+  $('pie2').innerHTML=p2;
+  const carry=r2(state.tx.reduce((a,t)=>a+(t.date.slice(0,7)<cur?(t.type==='bonoIn'?Math.round(t.amount*100):t.type==='bonoOut'?-Math.round(t.amount*100):0):0),0)/100);
+  const avail=r2(carry+bs.bonoIn), left3=r2(avail-bs.bonoOut);
+  let p3=pieHtml([{l:'Gastado este mes',v:bs.bonoOut,c:'var(--exp)'},{l:'Me quedan',v:left3,c:'var(--inc)'}],mxn(left3),'me quedan');
+  if(!p3) p3=emptyPie(mxn(0),'me quedan','Aún no hay saldo ni gastos de Edenred en este mes.');
+  else p3='<p class="muted" style="margin-top:0">Saldo anterior '+mxn(carry)+' + ingreso del mes '+mxn(bs.bonoIn)+' = disponible '+mxn(avail)+'</p>'+p3+(left3<0?'<p class="muted" style="color:var(--exp)">Gastaste '+mxn(-left3)+' más de lo que tenías en Edenred.</p>':'');
+  $('pie3').innerHTML=p3;
 
   const ms=[]; for(let i=11;i>=0;i--) ms.push(shift(cur,-i));
   $('cMonths').innerHTML=monthsSvg(ms);
