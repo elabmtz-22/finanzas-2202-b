@@ -14,14 +14,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f7f4;--panel:#ffffff;--ink:#17231f;--mute:#5d6b65;--line:#dde3de;--inc:#2a8a56;--exp:#cf3b3b;--sav:#2d6bd0;--debt:#e07b1a;--yel:#d3a600;--vr:#ff2323;--vo:#ff8a00;--vy:#ffd400;--vg:#10cc4a;--bon:#16898f;--sav2:#4fb3e8;--bad:#c23b3b;--accent:#0f5c4d;--on:#fff;
+:root{--bg:#f6f7f4;--panel:#ffffff;--ink:#17231f;--mute:#5d6b65;--line:#dde3de;--inc:#1e7a4b;--exp:#c03030;--sav:#2d6bd0;--debt:#b05400;--yel:#86650a;--vr:#ff2323;--vo:#ff8a00;--vy:#ffd400;--vg:#10cc4a;--bon:#16898f;--sav2:#4fb3e8;--bad:#c23b3b;--accent:#0f5c4d;--on:#fff;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121816;--panel:#1a2320;--ink:#e8efeb;--mute:#97a69f;--line:#2b3731;--inc:#4cc183;--exp:#f07070;--sav:#6a9cf0;--debt:#f5a34b;--yel:#f2cf4a;--vr:#ff3b3b;--vo:#ff9a1a;--vy:#ffe01a;--vg:#2ee86a;--bon:#4fd1d6;--sav2:#8fd0ff;--bad:#ef7a7a;--accent:#4cc1a6;--on:#0b1512}}
 :root[data-theme="dark"]{--bg:#121816;--panel:#1a2320;--ink:#e8efeb;--mute:#97a69f;--line:#2b3731;--inc:#4cc183;--exp:#f07070;--sav:#6a9cf0;--debt:#f5a34b;--yel:#f2cf4a;--vr:#ff3b3b;--vo:#ff9a1a;--vy:#ffe01a;--vg:#2ee86a;--bon:#4fd1d6;--sav2:#8fd0ff;--bad:#ef7a7a;--accent:#4cc1a6;--on:#0b1512}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{font-size:17px;margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
-main{max-width:760px;margin:0 auto;padding:18px 16px 60px}
+main{max-width:760px;margin:0 auto;padding:0 16px 140px}
 h1{font-size:28px;font-weight:800;margin:0;letter-spacing:-.02em}
 h2{font-size:19px;font-weight:700;margin:0 0 10px}
 section{padding:22px 0;border-top:1px solid var(--line)}
@@ -106,6 +106,27 @@ details.acc[open]>summary::after{transform:rotate(-90deg)}
 .pie svg{width:100%;max-width:230px;height:auto;display:block;margin:0 auto}
 .lg{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
 .lg span{flex:1}.lg small{color:var(--mute);min-width:46px;text-align:right}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);margin:0 -16px;padding:10px 16px;border-bottom:1px solid var(--line)}
+header.top h1{font-size:20px;white-space:nowrap}
+header.top .month{gap:4px}
+.tab{display:none}
+section.tab{border-top:0;padding:0}
+header.top{flex-wrap:nowrap;gap:8px}
+header.top .month input{width:122px;padding:9px 6px}
+header.top .icon{width:36px;height:36px;flex:none}.tab.on{display:block}
+.blk{border-top:1px solid var(--line)}
+#nav{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:30}
+#nav button{flex:1;min-width:0;background:none;border:0;padding:8px 0 7px;color:var(--mute);font-size:10.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+#nav button.on{color:var(--accent)}
+#nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#fab{position:fixed;right:16px;bottom:calc(78px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:var(--accent);color:var(--on);border:0;font-size:34px;line-height:1;box-shadow:0 4px 14px rgba(0,0,0,.35);z-index:25;cursor:pointer;padding:0}
+#addWrap{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.sheet button.primary{background:var(--accent);color:var(--on);border:0}
+#addClose{width:40px;height:40px;margin:0;padding:0;border-radius:50%;font-size:24px;line-height:1;flex:none}
+#qChips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:20px;padding:8px 13px;font-weight:600;font-size:14px;cursor:pointer}
+.chip.on{background:var(--accent);color:var(--on);border-color:var(--accent)}
+.pay .top{align-items:flex-start}
 .empty{color:var(--mute);padding:10px 0}
 details summary{cursor:pointer;font-weight:700;font-size:19px}
 .status{font-size:14px;color:var(--mute);margin-top:6px}
@@ -114,8 +135,7 @@ details summary{cursor:pointer;font-weight:700;font-size:19px}
 </head>
 <body>
 <main>
-
-<header>
+<header class="top">
   <h1>Mis finanzas</h1>
   <div class="month">
     <button class="icon" id="prev" aria-label="Mes anterior">‹</button>
@@ -123,133 +143,28 @@ details summary{cursor:pointer;font-weight:700;font-size:19px}
     <button class="icon" id="next" aria-label="Mes siguiente">›</button>
   </div>
 </header>
-
-<details class="acc" data-k="ajuste">
-<summary>Ajuste de presupuesto y deudas</summary>
-<div class="accb">
-<div id="setBox">
-    <p class="muted">Presupuesto mensual por categoría de gasto (incluye Viajes). Cambia los montos y todo se actualiza.</p>
-    <div class="set" id="setBud"></div>
-    <div class="sub3">Deudas por año</div>
-    <p class="muted" style="margin-top:-4px">Elige el año y agrega o edita sus deudas: saldo al empezar el año y pago mensual que planeas. Las de años anteriores se conservan.</p>
-    <div class="row"><div><label for="dYear">Año de las deudas</label><select id="dYear"></select></div>
-    <div style="align-self:end"><button class="link" id="copyPrev">Traer saldos pendientes del año anterior</button></div></div>
-    <div id="setDebt"></div>
-    <p class="muted" style="margin:14px 0 6px">Para agregar otra deuda:</p>
-    <div class="dcard">
-      <div style="margin-bottom:8px"><input id="newDebtName" type="text" maxlength="30" placeholder="Nombre de la deuda" aria-label="Nombre de la nueva deuda"></div>
-      <div class="two" style="margin-bottom:8px">
-        <div><label for="newDebtAmt">Saldo</label><input id="newDebtAmt" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
-        <div><label for="newDebtPlan">Pago mensual</label><input id="newDebtPlan" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
-      </div>
-      <button class="primary" id="addDebt">Agregar deuda</button>
-    </div>
-    <div class="status" id="status2"></div>
-    <div class="sub3">Ingreso mensual esperado</div>
-    <div class="set"><label for="exp">Ingreso neto del mes</label><input id="exp" type="number" inputmode="decimal" min="0" step="0.01"></div>
-  </div>
-</div>
-</details>
-<details class="acc" data-k="agregar" open>
-<summary>Agregar ingresos y gastos</summary>
-<div class="accb">
-  <div class="row">
-    <div><label for="tType">Tipo</label>
-      <select id="tType"><option value="income">Ingreso</option><option value="bonoIn">Edenred Ingreso</option><option value="expense">Gasto</option><option value="bonoOut">Edenred gasto</option><option value="saving">Ingreso al ahorro</option><option value="withdraw">Retiro del ahorro</option><option value="debt">Pago de deuda</option></select></div>
-    <div><label for="tCat">Categoría</label><select id="tCat"></select></div>
-    <div><label for="tAmt">Monto</label><input id="tAmt" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0"></div>
-    <div><label for="tDate">Fecha</label><input id="tDate" type="date"></div>
-    <div class="full"><label for="tNote">Nota (opcional)</label><input id="tNote" type="text" maxlength="80"></div>
-  </div>
-  <button class="primary" id="add">Guardar movimiento</button>
-  <div class="status" id="status"></div>
-
-</div>
-</details>
-<section class="fix" data-k="pagos">
-<h2 class="fixt">Pagos y gastos mensuales</h2>
-<div class="accb">
-  <p class="muted" id="budNote" style="margin-top:0"></p>
-  <div id="cBud"></div>
-</div>
-</section>
-<section class="fix" data-k="gane">
-<h2 class="fixt">Gané, gasté y ahorré</h2>
-<div class="accb">
+<section class="tab on" data-t="inicio">
+<div class="blk" style="border-top:0"><h2 class="fixt">Tablero</h2><div class="accb">
+  <div id="tablero"></div>
+</div></div>
+<div class="blk"><h2 class="fixt">Gané, gasté y ahorré</h2><div class="accb">
   <div class="figs">
     <div class="fig"><b id="fInc" style="color:var(--inc)"></b><span><i class="dot" style="background:var(--inc)"></i>Gané</span></div>
     <div class="fig"><b id="fExp" style="color:var(--exp)"></b><span><i class="dot" style="background:var(--exp)"></i>Gasté</span></div>
     <div class="fig"><b id="fSav" style="color:var(--sav)"></b><span><i class="dot" style="background:var(--sav)"></i>Ahorré este mes</span></div>
     <div class="fig"><b id="fDebt" style="color:var(--debt)"></b><span><i class="dot" style="background:var(--debt)"></i>Pagué a deudas</span></div>
   </div>
-  <div class="left" id="left"></div>
+  <div class="left" id="left" hidden></div>
   <div class="sub3" style="margin-top:22px">Lo que ganaste y a dónde se fue</div>
   <div class="pie" id="pie1"></div>
   <div class="sub3" style="margin-top:22px">Lo que planeaste con tu ingreso esperado</div>
   <div class="pie" id="pie2"></div>
   <h2 style="margin-top:22px">Por mes</h2>
   <div class="leg"><span><i class="dot" style="background:var(--inc)"></i>Gané</span><span><i class="dot" style="background:var(--exp)"></i>Gasté</span><span><i class="dot" style="background:var(--sav)"></i>Ahorré</span></div><div id="cMonths"></div>
-</div>
+</div></div>
 </section>
-<section class="fix" data-k="edenred">
-<h2 class="fixt">Bonos Edenred</h2>
-<div class="accb">
-  <p class="muted" style="margin-top:0">Van aparte: no se suman a tus ingresos de nómina. La gráfica empieza en tu primer mes con Edenred y crece hacia la derecha.</p>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">
-    <div class="fig"><b id="bIn" style="color:var(--inc)"></b><span>Ingreso</span></div>
-    <div class="fig"><b id="bOut" style="color:var(--exp)"></b><span>Gasto</span></div>
-    <div class="fig"><b id="bLeft"></b><span>Me quedan (acumulado)</span></div>
-  </div>
-  <div class="sub3">Ingresos y gastos del mes</div>
-  <div class="pie" id="pie3"></div>
-  <div class="sub3" style="margin-top:22px">Por mes</div>
-  <div class="leg"><span><i class="dot" style="background:var(--inc)"></i>Ingreso</span><span><i class="dot" style="background:var(--exp)"></i>Gasto</span></div>
-  <div id="cBono"></div>
-</div>
-</section>
-<section class="fix" data-k="cmpm">
-<h2 class="fixt">Comparativa mes vs mes</h2>
-<div class="accb">
-  <div class="row">
-    <div><label for="cmpMode">Comparar con</label>
-      <select id="cmpMode"><option value="prev">El mes anterior</option><option value="year">El mismo mes del año pasado</option><option value="other">Otro mes que elija</option></select></div>
-    <div id="cmpOtherWrap" hidden><label for="cmpMonth">Otro mes</label><input type="month" id="cmpMonth"></div>
-  </div>
-  <div id="cmpTable"></div>
-</div>
-</section>
-<section class="fix" data-k="cmpa">
-<h2 class="fixt">Comparativa años</h2>
-<div class="accb">
-  <div class="row">
-    <div><label for="yA">Año</label><select id="yA"></select></div>
-    <div><label for="yB">Contra el año</label><select id="yB"></select></div>
-    <div class="full"><label for="yMet">Concepto</label>
-      <select id="yMet"><option value="expense">Lo que gasté</option><option value="income">Lo que gané</option><option value="saving">Ingresos al ahorro</option><option value="withdraw">Retiros del ahorro</option><option value="debt">Lo que pagué a deudas</option><option value="bonoIn">Edenred Ingreso</option><option value="bonoOut">Edenred gasto</option></select></div>
-  </div>
-  <div class="leg"><span><i class="dot" style="background:var(--sav)"></i><span id="lgA"></span></span><span><i class="dot" style="background:var(--mute)"></i><span id="lgB"></span></span></div>
-  <div id="cYear"></div>
-  <p class="muted" id="yNote"></p>
-</div>
-</section>
-<section class="fix" data-k="ahorro">
-<h2 class="fixt">Ahorro</h2>
-<div class="accb">
-  <p class="muted" id="savNote" style="margin-top:0"></p>
-  <div class="leg"><span><i class="dot" style="background:var(--sav)"></i>Fondo de emergencia</span><span><i class="dot" style="background:var(--sav2)"></i>Boda</span></div><div id="cSave"></div>
-</div>
-</section>
-<section class="fix" data-k="deudas">
-<h2 class="fixt">Deudas por año</h2>
-<div class="accb">
-  <label for="dView">Ver deudas de</label>
-  <select id="dView" style="margin-bottom:16px"></select>
-  <div id="debts"></div>
-</div>
-</section>
-<details class="acc" data-k="movs">
-<summary>Movimientos del mes</summary>
-<div class="accb">
+<section class="tab" data-t="movs">
+<div class="blk" style="border-top:0"><h2 class="fixt">Movimientos del mes</h2><div class="accb">
   <label for="viewF">Ver</label>
   <select id="viewF">
     <option value="all">Todos los movimientos</option>
@@ -269,6 +184,86 @@ details summary{cursor:pointer;font-weight:700;font-size:19px}
       <div class="muted" id="edenSum"></div>
       <div id="listEden"></div>
     </div>
+  </div>
+</div></div>
+</section>
+<section class="tab" data-t="presup">
+<div class="blk" style="border-top:0"><h2 class="fixt">Pagos y gastos mensuales</h2><div class="accb">
+  <div id="qChips"></div>
+  <p class="muted" id="budNote" style="margin:6px 0 0">Rojo = pendiente, verde = pagado. En gastos variables: verde va bien, amarillo cerca del límite, rojo te pasaste.</p>
+  <div id="cBud"></div>
+  <button class="link" data-go="mas" data-open="ajuste">Cambiar presupuesto, días de pago y deudas</button>
+</div></div>
+</section>
+<section class="tab" data-t="deudas">
+<div class="blk" style="border-top:0"><h2 class="fixt">Deudas por año</h2><div class="accb">
+  <label for="dView">Ver deudas de</label>
+  <select id="dView" style="margin-bottom:16px"></select>
+  <div id="debts"></div>
+</div></div>
+</section>
+<section class="tab" data-t="ahorro">
+<div class="blk" style="border-top:0"><h2 class="fixt">Ahorro</h2><div class="accb">
+  <p class="muted" id="savNote" style="margin-top:0"></p>
+  <div class="leg"><span><i class="dot" style="background:var(--sav)"></i>Fondo de emergencia</span><span><i class="dot" style="background:var(--sav2)"></i>Boda</span></div><div id="cSave"></div>
+</div></div>
+<div class="blk"><h2 class="fixt">Bonos Edenred</h2><div class="accb">
+  <p class="muted" style="margin-top:0">Van aparte: no se suman a tus ingresos de nómina. La gráfica empieza en tu primer mes con Edenred y crece hacia la derecha.</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">
+    <div class="fig"><b id="bIn" style="color:var(--inc)"></b><span>Ingreso</span></div>
+    <div class="fig"><b id="bOut" style="color:var(--exp)"></b><span>Gasto</span></div>
+    <div class="fig"><b id="bLeft"></b><span>Me quedan (acumulado)</span></div>
+  </div>
+  <div class="sub3">Ingresos y gastos del mes</div>
+  <div class="pie" id="pie3"></div>
+  <div class="sub3" style="margin-top:22px">Por mes</div>
+  <div class="leg"><span><i class="dot" style="background:var(--inc)"></i>Ingreso</span><span><i class="dot" style="background:var(--exp)"></i>Gasto</span></div>
+  <div id="cBono"></div>
+</div></div>
+</section>
+<section class="tab" data-t="mas">
+<div class="blk" style="border-top:0"><h2 class="fixt">Comparativa mes vs mes</h2><div class="accb">
+  <div class="row">
+    <div><label for="cmpMode">Comparar con</label>
+      <select id="cmpMode"><option value="prev">El mes anterior</option><option value="year">El mismo mes del año pasado</option><option value="other">Otro mes que elija</option></select></div>
+    <div id="cmpOtherWrap" hidden><label for="cmpMonth">Otro mes</label><input type="month" id="cmpMonth"></div>
+  </div>
+  <div id="cmpTable"></div>
+</div></div>
+<div class="blk"><h2 class="fixt">Comparativa años</h2><div class="accb">
+  <div class="row">
+    <div><label for="yA">Año</label><select id="yA"></select></div>
+    <div><label for="yB">Contra el año</label><select id="yB"></select></div>
+    <div class="full"><label for="yMet">Concepto</label>
+      <select id="yMet"><option value="expense">Lo que gasté</option><option value="income">Lo que gané</option><option value="saving">Ingresos al ahorro</option><option value="withdraw">Retiros del ahorro</option><option value="debt">Lo que pagué a deudas</option><option value="bonoIn">Edenred Ingreso</option><option value="bonoOut">Edenred gasto</option></select></div>
+  </div>
+  <div class="leg"><span><i class="dot" style="background:var(--sav)"></i><span id="lgA"></span></span><span><i class="dot" style="background:var(--mute)"></i><span id="lgB"></span></span></div>
+  <div id="cYear"></div>
+  <p class="muted" id="yNote"></p>
+</div></div>
+<details class="acc" data-k="ajuste">
+<summary>Ajuste de presupuesto y deudas</summary>
+<div class="accb">
+<div id="setBox">
+    <p class="muted">Presupuesto mensual por categoría. Marca cada una como <b>pago fijo</b> (con su día de pago, por ejemplo 11, o 15,30 si va en dos partes) o como <b>gasto variable</b>.</p>
+    <div id="setBud"></div>
+    <div class="sub3">Deudas por año</div>
+    <p class="muted" style="margin-top:-4px">Elige el año y agrega o edita sus deudas: saldo al empezar el año y pago mensual que planeas. Las de años anteriores se conservan.</p>
+    <div class="row"><div><label for="dYear">Año de las deudas</label><select id="dYear"></select></div>
+    <div style="align-self:end"><button class="link" id="copyPrev">Traer saldos pendientes del año anterior</button></div></div>
+    <div id="setDebt"></div>
+    <p class="muted" style="margin:14px 0 6px">Para agregar otra deuda:</p>
+    <div class="dcard">
+      <div style="margin-bottom:8px"><input id="newDebtName" type="text" maxlength="30" placeholder="Nombre de la deuda" aria-label="Nombre de la nueva deuda"></div>
+      <div class="two" style="margin-bottom:8px">
+        <div><label for="newDebtAmt">Saldo</label><input id="newDebtAmt" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+        <div><label for="newDebtPlan">Pago mensual</label><input id="newDebtPlan" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+      </div>
+      <button class="primary" id="addDebt">Agregar deuda</button>
+    </div>
+    <div class="status" id="status2"></div>
+    <div class="sub3">Ingreso mensual esperado</div>
+    <div class="set"><label for="exp">Ingreso neto del mes</label><input id="exp" type="number" inputmode="decimal" min="0" step="0.01"></div>
   </div>
 </div>
 </details>
@@ -291,7 +286,33 @@ details summary{cursor:pointer;font-weight:700;font-size:19px}
 
 </div>
 </details>
+</section>
 </main>
+<nav id="nav" aria-label="Secciones">
+<button data-tab="inicio" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Inicio</span></button>
+<button data-tab="movs"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span>Historial</span></button>
+<button data-tab="presup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg><span>Pagos</span></button>
+<button data-tab="deudas"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>Deudas</span></button>
+<button data-tab="ahorro"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg><span>Ahorro</span></button>
+<button data-tab="mas"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Más</span></button>
+</nav>
+<button id="fab" aria-label="Agregar movimiento">+</button>
+<div id="addWrap" hidden role="dialog" aria-modal="true"><div class="sheet" style="max-height:92vh;overflow:auto">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 style="margin:0;text-transform:uppercase;letter-spacing:.04em;font-size:16px">Agregar ingresos y gastos</h3><button id="addClose" aria-label="Cerrar">×</button></div>
+<div style="margin-top:14px">
+  <div class="row">
+    <div><label for="tType">Tipo</label>
+      <select id="tType"><option value="income">Ingreso</option><option value="bonoIn">Edenred Ingreso</option><option value="expense">Gasto</option><option value="bonoOut">Edenred gasto</option><option value="saving">Ingreso al ahorro</option><option value="withdraw">Retiro del ahorro</option><option value="debt">Pago de deuda</option></select></div>
+    <div><label for="tCat">Categoría</label><select id="tCat"></select></div>
+    <div><label for="tAmt">Monto</label><input id="tAmt" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0"></div>
+    <div><label for="tDate">Fecha</label><input id="tDate" type="date"></div>
+    <div class="full"><label for="tNote">Nota (opcional)</label><input id="tNote" type="text" maxlength="80"></div>
+  </div>
+  <button class="primary" id="add">Guardar movimiento</button>
+  <div class="status" id="status"></div>
+
+</div></div></div>
+
 
 <div id="mdl" hidden role="dialog" aria-modal="true"><div class="sheet" id="mdlBody"></div></div>
 <div id="toast" hidden></div>
@@ -308,6 +329,8 @@ const TYPES={income:'Ingreso',bonoIn:'Edenred Ingreso',expense:'Gasto',bonoOut:'
 const defaults=()=>({tx:[],expected:20200,
 budget:{'Celular':1200,'Streaming':500,'Iglesia':3000,'Comidas y salidas':3000,'Transporte':1000,'Viajes':0,'Otros':0},
 debtPlanY:{},
+catKind:{'Celular':'fijo','Streaming':'fijo','Iglesia':'fijo','Comidas y salidas':'variable','Transporte':'variable','Viajes':'variable','Otros':'variable'},
+dueDays:{'c:Celular':[11],'c:Streaming':[15],'c:Iglesia':[15,30],'d:Plata Card':[4]},
 debtsY:{[new Date().getFullYear()]:{'Miriam':0,'Emilio':0,'Plata Card':0,'Préstamo $126,000':0}}});
 const KEY='mis-finanzas-v1';
 const PEN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>';
@@ -347,17 +370,18 @@ const label=m=>{const [y,mo]=m.split('-'); return MN[mo-1]+' '+y.slice(2);};
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
 // ---- charts (dibujadas aquí, sin librerías externas)
-const W=360,H=230,ML=40,MT=10,MB=24,PW=W-ML-8,PH=H-MT-MB;
+const W=360,H=230,ML=40,MT=10,MB=34,PW=W-ML-8,PH=H-MT-MB;
 function niceMax(v){if(v<=0)return 1000;const p=Math.pow(10,Math.floor(Math.log10(v))),n=v/p;return(n<=1?1:n<=2?2:n<=5?5:10)*p;}
 const short=v=>v>=1000?'$'+(Math.round(v/100)/10)+'k':'$'+v;
 function grid(max){let s='';for(let i=0;i<=4;i++){const v=max*i/4,y=MT+PH*(1-i/4);s+='<line class="g" x1="'+ML+'" x2="'+(W-8)+'" y1="'+y+'" y2="'+y+'"/><text class="t" x="'+(ML-5)+'" y="'+(y+3)+'" text-anchor="end">'+short(v)+'</text>';}return s;}
+function mlab(x,i,cx){const yr=(i===0||x.slice(5)==='01')?'<text class="t" x="'+cx+'" y="'+(H-4)+'" text-anchor="middle">'+x.slice(0,4)+'</text>':''; return '<text class="t" x="'+cx+'" y="'+(H-16)+'" text-anchor="middle">'+MN[+x.slice(5)-1]+'</text>'+yr;}
 function monthsSvg(ms){
   const data=ms.map(x=>{const s=sums(x);return[s.income,s.expense,Math.max(0,r2(s.saving-s.withdraw))];});
   const max=niceMax(Math.max(0,...data.flat())), gw=PW/ms.length, bw=gw*0.26, cols=['--inc','--exp','--sav'];
   let s='<svg class="ch" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Ingresos, gastos y ahorro por mes">'+grid(max);
   ms.forEach((x,i)=>{
     data[i].forEach((v,k)=>{const h=PH*v/max;s+='<rect x="'+(ML+i*gw+gw*0.1+k*bw)+'" y="'+(MT+PH-h)+'" width="'+bw+'" height="'+h+'" rx="1.5" fill="var('+cols[k]+')"><title>'+label(x)+': '+mxn(v)+'</title></rect>';});
-    s+='<text class="t" x="'+(ML+i*gw+gw/2)+'" y="'+(H-8)+'" text-anchor="middle">'+MN[+x.slice(5)-1]+'</text>';
+    s+=mlab(x,i,ML+i*gw+gw/2);
   });
   return s+'</svg>';
 }
@@ -382,7 +406,7 @@ function bonosSvg(ms){
   let s='<svg class="ch" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Edenred por mes">'+grid(max);
   ms.forEach((x,i)=>{
     data[i].forEach((v,k)=>{const hh=PH*v/max;s+='<rect x="'+(ML+i*gw+gw*0.12+k*bw)+'" y="'+(MT+PH-hh)+'" width="'+bw+'" height="'+hh+'" rx="1.5" fill="var('+cols[k]+')"><title>'+label(x)+': '+mxn(v)+'</title></rect>';});
-    s+='<text class="t" x="'+(ML+i*gw+gw/2)+'" y="'+(H-8)+'" text-anchor="middle">'+MN[+x.slice(5)-1]+'</text>';
+    s+=mlab(x,i,ML+i*gw+gw/2);
   });
   return s+'</svg>';
 }
@@ -415,30 +439,7 @@ function render(){
   $('bIn').textContent=mxn(bs.bonoIn); $('bOut').textContent=mxn(bs.bonoOut);
   $('bLeft').textContent=mxn(bsal); $('bLeft').style.color=bsal<0?'var(--bad)':'var(--ink)';
   $('left').innerHTML+='<br><span class="muted">Edenred: te quedan '+mxn(bsal)+'.</span>';
-  // pagos y gastos mensuales (rojo = pendiente, verde = pagado)
-  const cats=CATS.expense.filter(c=>(+state.budget[c]||0)>0||state.tx.some(t=>inMonth(t,cur)&&t.type==='expense'&&t.cat===c));
-  const spent=c=>state.tx.filter(t=>inMonth(t,cur)&&t.type==='expense'&&t.cat===c).reduce((a,t)=>a+Math.round(t.amount*100),0)/100;
-  let bh='<div class="sub3" style="margin-top:4px">Gastos del mes</div>';
-  bh+=cats.length?cats.map(c=>{const bu=r2(state.budget[c]),sp=spent(c),over=sp>bu,done=bu>0&&sp>=bu&&!over,col=done?'var(--inc)':'var(--exp)',pct=bu?Math.min(sp/bu*100,100):0;
-    const cap=over?'<span style="color:var(--exp)">Te pasaste por '+mxn(r2(sp-bu))+'</span>':(done?'<span style="color:var(--inc)">Pagado</span>':'Faltan '+mxn(r2(bu-sp)));
-    return '<div class="brow"><div class="top"><span>'+c+'</span><span>'+mxn(sp)+' de '+mxn(bu)+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:14px;margin-top:3px">'+cap+'</div></div>';}).join(''):'<div class="empty">Define tu presupuesto en "Ajuste de presupuesto y deudas".</div>';
-  // deudas registradas del año de este mes
-  const yr=cur.slice(0,4), dd=dyRead(yr), plan=(state.debtPlanY&&state.debtPlanY[yr])||{};
-  let planDebt=0, dh='';
-  Object.keys(dd).forEach(n=>{
-    const ini=r2(dd[n]), paidAll=state.tx.filter(t=>t.type==='debt'&&t.cat===n&&t.date.slice(0,4)===yr).reduce((a,t)=>a+Math.round(t.amount*100),0)/100;
-    const left=Math.max(r2(ini-paidAll),0);
-    const paidM=state.tx.filter(t=>t.type==='debt'&&t.cat===n&&inMonth(t,cur)).reduce((a,t)=>a+Math.round(t.amount*100),0)/100;
-    if(left<=0&&!paidM) return;
-    const pm=r2(plan[n]); planDebt=r2(planDebt+pm);
-    const done=left<=0||(pm>0&&paidM>=pm), col=done?'var(--inc)':'var(--exp)', pct=left<=0?100:(pm?paidM/pm*100:0);
-    const cap=left<=0?'<span style="color:var(--inc)">Deuda liquidada</span>':(done?'<span style="color:var(--inc)">Pago del mes completo</span> · ':'')+(left>0?'Pendiente de la deuda: '+mxn(left):'');
-    dh+='<div class="brow"><div class="top"><span>'+esc(n)+'</span><span>'+(pm?mxn(paidM)+' de '+mxn(pm):mxn(paidM)+' · sin pago mensual')+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:14px;margin-top:3px">'+cap+'</div></div>';
-  });
-  bh+='<div class="sub3">Deudas</div>'+(dh||'<div class="empty">No hay deudas registradas en '+yr+'. Agrégalas en "Ajuste de presupuesto y deudas".</div>');
-  bh+='<div class="left" style="margin-top:6px">Total planeado del mes: <b>'+mxn(r2(totBud+planDebt))+'</b><br><span class="muted">Gastos '+mxn(totBud)+' + deudas '+mxn(planDebt)+'</span></div>';
-  $('cBud').innerHTML=bh;
-  $('budNote').textContent='Barra roja: falta por pagar. Barra verde: ya quedó pagado o liquidado.';
+  const planDebt=renderPresup(totBud);
 
   // gráficas de pastel
   const base1=r2(s.income+s.withdraw), used1=r2(s.expense+s.debt+s.saving), rest1=r2(base1-used1);
@@ -460,7 +461,10 @@ function render(){
   $('pie3').innerHTML=p3;
 
   const ms=[]; for(let i=11;i>=0;i--) ms.push(shift(cur,-i));
-  $('cMonths').innerHTML=monthsSvg(ms);
+  const mainM=state.tx.filter(t=>t.type!=='bonoIn'&&t.type!=='bonoOut').map(t=>t.date.slice(0,7)).sort();
+  let m0=mainM.length?mainM[0]:cur; if(cur<m0) m0=cur; if(cur>shift(m0,11)) m0=shift(cur,-11);
+  const msM=[]; for(let i=0;i<12;i++) msM.push(shift(m0,i));
+  $('cMonths').innerHTML=monthsSvg(msM);
   const edM=state.tx.filter(t=>t.type==='bonoIn'||t.type==='bonoOut').map(t=>t.date.slice(0,7)).sort();
   let es=edM.length?edM[0]:cur; if(cur<es) es=cur; if(cur>shift(es,11)) es=shift(cur,-11);
   const ems=[]; for(let i=0;i<12;i++) ems.push(shift(es,i));
@@ -509,6 +513,7 @@ function render(){
   $('edenSum').textContent='Ingreso '+mxn(sums(cur).bonoIn)+' · Gasto '+mxn(sums(cur).bonoOut);
   $('listEden').innerHTML=eden.length?eden.map(rowHtml).join(''):'<div class="empty">No hay movimientos de Edenred en este mes.</div>';
   renderCompare();
+  renderTablero();
   bkLabel();
 }
 // ---- comparar
@@ -561,17 +566,86 @@ $('yA').onchange=e=>{cmp.yA=+e.target.value;renderCompare();};
 $('yB').onchange=e=>{cmp.yB=+e.target.value;renderCompare();};
 $('yMet').onchange=e=>{cmp.met=e.target.value;renderCompare();};
 
+// ---- pagos por quincena
+let qView='auto';
+const kindOf=c=>(state.catKind&&state.catKind[c])||'variable';
+const daysFor=k=>{const d=(state.dueDays||{})[k]; return Array.isArray(d)?d.filter(x=>x>=1&&x<=31):[];};
+function setDays(k,str){const a=[...new Set(String(str).split(/[^0-9]+/).filter(Boolean).map(Number).filter(n=>n>=1&&n<=31))].sort((x,y)=>x-y); (state.dueDays||(state.dueDays={}))[k]=a;}
+const sumC=f=>state.tx.filter(f).reduce((a,t)=>a+Math.round(t.amount*100),0)/100;
+function monthParts(ym){
+  const yr=ym.slice(0,4), parts=[], noPlan=[]; let planDebt=0;
+  const mk=(kind,name,total,days,spent,done,left)=>{
+    const ds=days&&days.length?[...days].sort((a,b)=>a-b):[0], n=ds.length; let cum=0, prev=0;
+    ds.forEach((d,i)=>{const each=r2(total/n), amt=i<n-1?each:r2(total-each*(n-1)); cum=r2(cum+amt);
+      const paid=done||spent>=cum-0.005, cover=amt?Math.max(0,Math.min(100,(spent-prev)/amt*100)):0;
+      parts.push({kind,name,day:d,amt,paid,cover:paid?100:cover,part:i+1,of:n,left}); prev=cum;});
+  };
+  CATS.expense.forEach(c=>{ if(kindOf(c)!=='fijo') return; const bu=r2(state.budget[c]); if(!(bu>0)) return;
+    mk('fijo',c,bu,daysFor('c:'+c),sumC(t=>t.type==='expense'&&t.cat===c&&t.date.slice(0,7)===ym),false); });
+  const dd=state.debtsY[yr]||{}, plan=(state.debtPlanY&&state.debtPlanY[yr])||{};
+  Object.keys(dd).forEach(n=>{
+    const ini=r2(dd[n]), paidAll=sumC(t=>t.type==='debt'&&t.cat===n&&t.date.slice(0,4)===yr), left=Math.max(r2(ini-paidAll),0);
+    const paidM=sumC(t=>t.type==='debt'&&t.cat===n&&t.date.slice(0,7)===ym);
+    if(left<=0&&!paidM) return;
+    const pm=r2(plan[n]);
+    if(!pm){noPlan.push({name:n,paidM,left}); return;}
+    planDebt=r2(planDebt+pm); mk('deuda',n,pm,daysFor('d:'+n),paidM,left<=0,left);
+  });
+  return {parts,noPlan,planDebt};
+}
+function statusHtml(p,isNow,td){
+  if(p.paid) return '<span style="color:var(--inc);font-weight:700">'+(p.kind==='deuda'&&p.left<=0?'✓ Liquidada':'✓ Pagado')+'</span>';
+  let txt='Pendiente', warn=false;
+  if(isNow&&p.day){const d=p.day-td; if(d<0){txt='Vencido hace '+(-d)+(d===-1?' día':' días');warn=true;} else if(d===0){txt='Vence hoy';warn=true;} else if(d<=3){txt='Vence en '+d+(d===1?' día':' días');warn=true;}}
+  return '<span style="color:var(--exp);font-weight:700">'+(warn?'! ':'')+txt+'</span>';
+}
+const partWhen=p=>(p.day?'día '+p.day+' · '+(p.day<=15?'1ª':'2ª')+' quincena':'sin día · 1ª quincena')+(p.of>1?' · parte '+p.part+' de '+p.of:'');
+function renderPresup(totBud){
+  const ym=cur, isNow=ym===iso(today).slice(0,7), td=today.getDate();
+  let qv=qView; if(qv==='auto') qv=isNow?(td<=15?'q1':'q2'):'all';
+  const inQ=d=>qv==='all'||(qv==='q1'?(d||1)<=15:(d||1)>15);
+  const R=monthParts(ym), parts=R.parts.filter(p=>inQ(p.day)).sort((a,b)=>(a.day||1)-(b.day||1));
+  $('qChips').innerHTML=[['all','Mes completo'],['q1','1ª quincena (1–15)'],['q2','2ª quincena (16–fin)']].map(([k,l])=>'<button class="chip'+(qv===k?' on':'')+'" data-q="'+k+'">'+l+'</button>').join('');
+  const row=p=>'<div class="brow pay"><div class="top"><span><b>'+esc(p.name)+'</b><br><span class="muted" style="font-size:12px">'+partWhen(p)+'</span></span><span style="text-align:right"><b>'+mxn(p.amt)+'</b><br>'+statusHtml(p,isNow,td)+'</span></div>'+bar2(p.cover,p.paid?'var(--inc)':'var(--exp)')+'</div>';
+  const fij=parts.filter(p=>p.kind==='fijo'), deu=parts.filter(p=>p.kind==='deuda');
+  let h='<div class="sub3">Pagos fijos</div>'+(fij.length?fij.map(row).join(''):'<div class="empty">No hay pagos fijos en este periodo. Márcalos como "pago fijo" en Ajustes.</div>');
+  h+='<div class="sub3">Deudas</div>'+(deu.length?deu.map(row).join(''):'<div class="empty">No hay pagos de deudas en este periodo. Define el "Pago mensual" de cada deuda en Ajustes.</div>');
+  if(qv==='all'&&R.noPlan.length) h+='<div class="muted" style="font-size:13px;margin-bottom:8px">Sin pago mensual definido: '+R.noPlan.map(x=>esc(x.name)+(x.paidM?' ('+mxn(x.paidM)+' este mes)':'')).join(' · ')+'</div>';
+  const half=qv==='all'?1:0.5, inRange=t=>qv==='all'||(qv==='q1'?+t.date.slice(8)<=15:+t.date.slice(8)>15);
+  const vars=CATS.expense.filter(c=>kindOf(c)==='variable'), spR=c=>sumC(t=>t.type==='expense'&&t.cat===c&&t.date.slice(0,7)===ym&&inRange(t));
+  let varBud=0; let vh='';
+  vars.forEach(c=>{const bu=r2((+state.budget[c]||0)*half), sp=spR(c); if(!(bu>0)&&!(sp>0)) return; varBud=r2(varBud+bu);
+    const over=sp>bu, pct=bu?sp/bu*100:0, col=over?'var(--exp)':pct>=80?'var(--yel)':'var(--inc)';
+    vh+='<div class="brow"><div class="top"><span>'+esc(c)+'</span><span>'+mxn(sp)+' de '+mxn(bu)+'</span></div>'+bar2(Math.min(pct,100),col)+'<div class="muted" style="font-size:12px;margin-top:3px">'+(over?'<span style="color:var(--exp)">! Te pasaste por '+mxn(r2(sp-bu))+'</span>':'Te quedan '+mxn(r2(bu-sp)))+'</div></div>';});
+  h+='<div class="sub3">Gastos variables</div>'+(vh||'<div class="empty">Sin gastos variables presupuestados.</div>');
+  const tot=r2(parts.reduce((a,p)=>a+p.amt,0)+varBud), pend=r2(parts.filter(p=>!p.paid).reduce((a,p)=>a+p.amt,0));
+  h+='<div class="left" style="margin-top:6px">Total planeado: <b>'+mxn(tot)+'</b><br><span class="muted">Falta por pagar en pagos fijos y deudas: '+mxn(pend)+'</span></div>';
+  $('cBud').innerHTML=h;
+  return R.planDebt;
+}
+function renderTablero(){
+  const s=sums(cur), totBud=Object.values(state.budget).reduce((a,b)=>a+Math.round((+b||0)*100),0)/100;
+  const room=r2(totBud-s.expense), free=r2(s.income+s.withdraw-s.expense-s.saving-s.debt);
+  const eden=sumC(t=>t.type==='bonoIn'&&t.date.slice(0,7)<=cur)-sumC(t=>t.type==='bonoOut'&&t.date.slice(0,7)<=cur);
+  const ahorro=sumC(t=>t.type==='saving'&&t.date.slice(0,7)<=cur)-sumC(t=>t.type==='withdraw'&&t.date.slice(0,7)<=cur);
+  const fg=(v,l,c)=>'<div class="fig"><b style="color:'+c+'">'+mxn(v)+'</b><span>'+l+'</span></div>';
+  let h='<div class="figs">'+fg(room,'Te quedan por gastar',room<0?'var(--exp)':'var(--inc)')+fg(free,'Sin asignar este mes',free<0?'var(--exp)':'var(--inc)')+fg(r2(eden),'Edenred: me quedan',eden<0?'var(--exp)':'var(--ink)')+fg(r2(ahorro),'Ahorrado en total','var(--sav)')+'</div>';
+  const isNow=cur===iso(today).slice(0,7), td=today.getDate();
+  const pend=monthParts(cur).parts.filter(p=>!p.paid).sort((a,b)=>(a.day||99)-(b.day||99)).slice(0,5);
+  h+='<div class="sub3">Próximos pagos</div>'+(pend.length?pend.map(p=>'<div class="lg"><span><b>'+esc(p.name)+'</b><br><span class="muted" style="font-size:12px">'+partWhen(p)+' · '+mxn(p.amt)+'</span></span><span style="flex:none;text-align:right">'+statusHtml(p,isNow,td)+'</span></div>').join('')+'<button class="link" data-go="presup">Ver todos los pagos</button>':'<div class="empty">No hay pagos pendientes este mes. ✓</div>');
+  $('tablero').innerHTML=h;
+}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 const catsFor=t=>t==='debt'?Object.keys(dyRead(($('tDate').value||iso(today)).slice(0,4))):CATS[t];
 function fillCats(){ const prev=$('tCat').value; const l=catsFor($('tType').value);
   $('tCat').innerHTML=l.length?l.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join(''):'<option value="">Sin deudas en ese año</option>'; if(l.includes(prev)) $('tCat').value=prev; }
 function fillSettings(){
-  $('setBud').innerHTML=CATS.expense.map(c=>'<label for="b_'+c+'">'+c+'</label><input id="b_'+c+'" data-b="'+c+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(state.budget[c]||0)+'">').join('');
+  $('setBud').innerHTML=CATS.expense.map(c=>'<div class="dcard"><b>'+c+'</b><div class="two" style="margin-top:8px"><div><label>Monto mensual</label><input data-b="'+c+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(state.budget[c]||0)+'"></div><div><label>Tipo</label><select data-ck="'+c+'"><option value="fijo"'+(kindOf(c)==='fijo'?' selected':'')+'>Pago fijo</option><option value="variable"'+(kindOf(c)==='variable'?' selected':'')+'>Gasto variable</option></select></div></div><div style="margin-top:8px"><label>Día(s) de pago (ej. 11 o 15,30)</label><input data-cd="'+c+'" type="text" inputmode="numeric" maxlength="20" placeholder="Sin día" value="'+daysFor('c:'+c).join(',')+'"></div></div>').join('');
   const yrs=new Set(Object.keys(state.debtsY)); const cy=new Date().getFullYear(); [cy,cy+1,+cur.slice(0,4),+dYear].forEach(y=>yrs.add(String(y)));
   $('dYear').innerHTML=[...yrs].sort((x,y)=>y-x).map(y=>'<option'+(y===dYear?' selected':'')+'>'+y+'</option>').join('');
   const dd=dyRead(dYear);
-  $('setDebt').innerHTML=Object.keys(dd).map((n,i)=>'<div class="dcard"><div class="top2"><input data-dn="'+i+'" type="text" maxlength="30" value="'+esc(n)+'" aria-label="Nombre de la deuda"><button class="icon" data-dx="'+i+'" aria-label="Quitar deuda">×</button></div><div class="two"><div><label>Saldo al empezar '+dYear+'</label><input data-d="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(dd[n]||0)+'" aria-label="Saldo inicial"></div><div><label>Pago mensual</label><input data-dp="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+((DP(dYear)[n])||0)+'" aria-label="Pago mensual"></div></div></div>').join('')||'<div class="empty">No hay deudas registradas en '+dYear+'.</div>';
+  $('setDebt').innerHTML=Object.keys(dd).map((n,i)=>'<div class="dcard"><div class="top2"><input data-dn="'+i+'" type="text" maxlength="30" value="'+esc(n)+'" aria-label="Nombre de la deuda"><button class="icon" data-dx="'+i+'" aria-label="Quitar deuda">×</button></div><div class="two"><div><label>Saldo al empezar '+dYear+'</label><input data-d="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(dd[n]||0)+'" aria-label="Saldo inicial"></div><div><label>Pago mensual</label><input data-dp="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+((DP(dYear)[n])||0)+'" aria-label="Pago mensual"></div></div><div style="margin-top:8px"><label>Día(s) de pago (ej. 4 o 15,30)</label><input data-dd="'+i+'" type="text" inputmode="numeric" maxlength="20" placeholder="Sin día" value="'+daysFor('d:'+n).join(',')+'"></div></div>').join('')||'<div class="empty">No hay deudas registradas en '+dYear+'.</div>';
   $('exp').value=state.expected;
 }
 
@@ -581,6 +655,16 @@ $('dView').addEventListener('change',e=>{dViewY=e.target.value;render();});
 $('prev').onclick=()=>{cur=shift(cur,-1);render();};
 $('next').onclick=()=>{cur=shift(cur,1);render();};
 $('month').addEventListener('change',e=>{if(e.target.value){cur=e.target.value;render();}});
+let lastType='expense';
+function openAdd(){
+  $('tType').value=lastType; fillCats();
+  $('tDate').value=(cur===iso(today).slice(0,7))?iso(today):cur+'-01';
+  $('addWrap').hidden=false; $('fab').hidden=true; setTimeout(()=>$('tAmt').focus(),50);
+}
+function closeAdd(){ $('addWrap').hidden=true; $('fab').hidden=false; }
+$('fab').onclick=openAdd; $('addClose').onclick=closeAdd;
+$('addWrap').addEventListener('click',e=>{if(e.target.id==='addWrap') closeAdd();});
+$('qChips').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-q]'); if(b){qView=b.dataset.q; render();}});
 $('add').onclick=()=>{
   const amt=parseFloat($('tAmt').value), d=$('tDate').value;
   if(!(amt>0)){say('Escribe un monto mayor a 0');$('tAmt').focus();return;}
@@ -588,7 +672,7 @@ $('add').onclick=()=>{
   if(!$('tCat').value){say('No hay deudas registradas en ese año. Agrégalas en Ajustar presupuesto y deudas.');return;}
   state.tx.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),date:d,type:$('tType').value,cat:$('tCat').value,amount:r2(amt),note:$('tNote').value.trim()});
   $('tAmt').value='';$('tNote').value='';
-  cur=d.slice(0,7); save(); render();
+  cur=d.slice(0,7); lastType=$('tType').value; save(); render(); closeAdd(); toast('Movimiento guardado');
 };
 let mid=null;
 function toast(m){const t=$('toast'); t.textContent=m; t.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>t.hidden=true,2600);}
@@ -623,6 +707,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('mdl').hidden) m
 $('setBox').addEventListener('input',e=>{
   const t=e.target, v=r2(parseFloat(t.value)||0);
   if(t.dataset.b) state.budget[t.dataset.b]=v;
+  else if(t.dataset.ck!==undefined){(state.catKind||(state.catKind={}))[t.dataset.ck]=t.value;}
+  else if(t.dataset.cd!==undefined){setDays('c:'+t.dataset.cd,t.value);}
+  else if(t.dataset.dd!==undefined){const k=Object.keys(DY(dYear))[+t.dataset.dd]; if(k!==undefined) setDays('d:'+k,t.value);}
   else if(t.dataset.dp!==undefined){const k=Object.keys(DY(dYear))[+t.dataset.dp]; if(k!==undefined) DP(dYear)[k]=v;}
   else if(t.dataset.d!==undefined){const k=Object.keys(DY(dYear))[+t.dataset.d]; if(k!==undefined) DY(dYear)[k]=v;}
   else if(t.id==='exp') state.expected=v;
@@ -687,13 +774,14 @@ $('setBox').addEventListener('change',e=>{
   if(keys.includes(val)){say('Ya existe una deuda con ese nombre');fillSettings();return;}
   const nd={}; keys.forEach(k=>{nd[k===old?val:k]=D[k];}); state.debtsY[dYear]=nd;
   const P=DP(dYear); if(old in P){P[val]=P[old]; delete P[old];}
+  const DDm=state.dueDays||(state.dueDays={}); if(('d:'+old) in DDm){DDm['d:'+val]=DDm['d:'+old]; delete DDm['d:'+old];}
   state.tx.forEach(t=>{if(t.type==='debt'&&t.cat===old&&t.date.slice(0,4)===dYear)t.cat=val;});
   refreshDebts();
 });
 $('setBox').addEventListener('click',e=>{
   const x=e.target.dataset&&e.target.dataset.dx;
   if(x!==undefined&&x!==''){const name=Object.keys(DY(dYear))[+x];
-    if(name!==undefined&&confirm('¿Quitar la deuda "'+name+'"? Los pagos que ya registraste se conservan en tu historial.')){delete DY(dYear)[name]; delete DP(dYear)[name]; refreshDebts();}
+    if(name!==undefined&&confirm('¿Quitar la deuda "'+name+'"? Los pagos que ya registraste se conservan en tu historial.')){delete DY(dYear)[name]; delete DP(dYear)[name]; if(state.dueDays) delete state.dueDays['d:'+name]; refreshDebts();}
     return;}
   if(e.target.id==='addDebt'){
     const n=$('newDebtName').value.trim(), a=r2(parseFloat($('newDebtAmt').value)||0);
@@ -708,6 +796,16 @@ fillCats(); fillSettings(); render();
 const UIKEY='mis-finanzas-ui'; let ui={}; try{ui=JSON.parse(localStorage.getItem(UIKEY)||'{}');}catch(e){}
 document.querySelectorAll('details.acc').forEach(d=>{const k=d.dataset.k; if(k in ui) d.open=!!ui[k];
   d.addEventListener('toggle',()=>{ui[k]=d.open; try{localStorage.setItem(UIKEY,JSON.stringify(ui));}catch(e){}});});
+
+const TAB_ORDER=['inicio','movs','presup','deudas','ahorro','mas'];
+function goTab(t){ if(!TAB_ORDER.includes(t)) t='inicio'; ui.tab=t; try{localStorage.setItem(UIKEY,JSON.stringify(ui));}catch(e){}
+  document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('on',e.dataset.t===t));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t)); window.scrollTo(0,0); }
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.tab)));
+document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-go]'); if(!g) return; goTab(g.dataset.go);
+  if(g.dataset.open){const d=document.querySelector('details[data-k='+g.dataset.open+']'); if(d){d.open=true; setTimeout(()=>d.scrollIntoView({behavior:'smooth'}),50);}}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('addWrap').hidden) closeAdd();});
+goTab(ui.tab||'inicio');
 
 // Private cloud copy (falls back to this browser if unavailable)
 (async()=>{
