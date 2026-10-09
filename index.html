@@ -251,6 +251,17 @@ details summary{cursor:pointer;font-weight:700;font-size:19px}
 <div id="setBox">
     <p class="muted">Presupuesto mensual por categoría. Marca cada una como <b>pago fijo</b> (con su día de pago, por ejemplo 11, o 15,30 si va en dos partes) o como <b>gasto variable</b>.</p>
     <div id="setBud"></div>
+    <div class="sub3">Agregar pago o gasto</div>
+    <p class="muted" style="margin-top:-4px">Agrega otro pago fijo (luz, internet, renta...) o un gasto variable. Queda guardado y aparece en Pagos y al agregar movimientos.</p>
+    <div class="dcard">
+      <div><input id="newCatName" type="text" maxlength="30" placeholder="Nombre (ej. Luz, Internet, Renta)" autocomplete="off"></div>
+      <div class="two" style="margin-top:8px">
+        <div><label for="newCatAmt">Monto mensual</label><input id="newCatAmt" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+        <div><label for="newCatKind">Tipo</label><select id="newCatKind"><option value="fijo">Pago fijo</option><option value="variable">Gasto variable</option></select></div>
+      </div>
+      <div style="margin-top:8px"><label for="newCatDays">Día(s) de pago (ej. 11 o 15,30)</label><input id="newCatDays" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" maxlength="20" placeholder="Sin día, ej. 15, 30"></div>
+      <button class="primary" id="addCat" style="margin-top:10px">Agregar</button>
+    </div>
     <div class="sub3">Deudas por año</div>
     <p class="muted" style="margin-top:-4px">Elige el año y agrega o edita sus deudas: saldo al empezar el año y pago mensual que planeas. Las de años anteriores se conservan.</p>
     <div class="row"><div><label for="dYear">Año de las deudas</label><select id="dYear"></select></div>
@@ -332,7 +343,9 @@ bonoIn:['Recarga Edenred','Otro'],
 bonoOut:['Supermercado','Restaurante','Otro'],
 debt:['Miriam','Emilio','Plata Card','Préstamo $126,000']};
 const TYPES={income:'Ingreso',bonoIn:'Edenred Ingreso',expense:'Gasto',bonoOut:'Edenred gasto',saving:'Ingreso al ahorro',withdraw:'Retiro del ahorro',debt:'Pago de deuda'};
-const defaults=()=>({tx:[],expected:20200,
+const BASE_EXP=CATS.expense.slice();
+function syncCats(){CATS.expense=[...BASE_EXP,...(Array.isArray(state.extraCats)?state.extraCats:[])];}
+const defaults=()=>({tx:[],expected:20200,extraCats:[],
 budget:{'Celular':1200,'Streaming':500,'Iglesia':3000,'Comidas y salidas':3000,'Transporte':1000,'Viajes':0,'Otros':0},
 debtPlanY:{},
 catKind:{'Celular':'fijo','Streaming':'fijo','Iglesia':'fijo','Comidas y salidas':'variable','Transporte':'variable','Viajes':'variable','Otros':'variable'},
@@ -353,7 +366,7 @@ let state=defaults(), cur=today.getFullYear()+'-'+pad(today.getMonth()+1), ref=n
 function loadState(raw){const s=JSON.parse(JSON.stringify(raw));
   if(s.debts&&!s.debtsY){s.debtsY={[new Date().getFullYear()]:s.debts};} delete s.debts;
   (s.tx||[]).forEach(t=>{if(t.type==='bonoIn'&&t.cat==='Bono de despensa')t.cat='Recarga Edenred';});
-  return Object.assign(defaults(),s);}
+  const m=Object.assign(defaults(),s); CATS.expense=[...BASE_EXP,...(Array.isArray(m.extraCats)?m.extraCats:[])]; return m;}
 let dYear=String(new Date().getFullYear());
 let dViewY='all';
 const DY=y=>state.debtsY[y]||(state.debtsY[y]={});
@@ -658,6 +671,15 @@ function renderTablero(){
   const ahorro=sumC(t=>t.type==='saving'&&t.date.slice(0,7)<=cur)-sumC(t=>t.type==='withdraw'&&t.date.slice(0,7)<=cur);
   const fg=(v,l,c)=>'<div class="fig"><b style="color:'+c+'">'+mxn(v)+'</b><span>'+l+'</span></div>';
   let h='<div class="figs"><div class="fig tap" data-disp="1"><b style="color:'+(disp<0?'var(--exp)':'var(--inc)')+'">'+mxn(disp)+'</b><span>Dinero disponible</span><span style="display:block;color:var(--accent);font-weight:700;font-size:13px;margin-top:2px">Toca para mandarlo ›</span></div>'+fg(r2(ahorro),'Ahorrado en total','var(--sav)')+fg(r2(eden),'Edenred: me quedan',eden<0?'var(--exp)':'var(--ink)')+'</div>';
+  const PR=monthParts(cur), sk=(k,f)=>r2(PR.parts.filter(p=>p.kind===k).reduce((a,p)=>a+p[f],0));
+  const sumCard=(title,T,A,Rm,extra)=>{const pct=T?A/T*100:0, done=T>0&&Rm<=0;
+    return '<div class="tap" data-go="presup" style="margin-top:16px"><div class="sub3" style="margin:0 0 6px">'+title+'</div>'
+     +'<div class="lg"><span>Pago total</span><b>'+mxn(T)+'</b></div><div class="lg"><span>Abonado</span><b style="color:var(--inc)">'+mxn(A)+'</b></div><div class="lg"><span>Resta por pagar</span><b style="color:'+(done?'var(--inc)':'var(--exp)')+'">'+mxn(Rm)+'</b></div>'
+     +'<div style="margin-top:8px">'+bar2(pct,done?'var(--inc)':'var(--exp)')+'</div>'+(extra||'')+'</div>';};
+  const yrT=cur.slice(0,4), ddT=state.debtsY[yrT]||{};
+  const debtLeft=r2(Object.keys(ddT).reduce((a,n)=>a+Math.max(r2(ddT[n]-sumC(t=>t.type==='debt'&&t.cat===n&&t.date.slice(0,4)===yrT)),0),0));
+  h+=sumCard('Pagos fijos del mes',sk('fijo','amt'),sk('fijo','ab'),sk('fijo','rest'))
+    +sumCard('Deudas: pagos del mes',sk('deuda','amt'),sk('deuda','ab'),sk('deuda','rest'),'<div class="muted" style="font-size:14px;margin-top:6px">Debes en total en '+yrT+': <b>'+mxn(debtLeft)+'</b></div>');
   const isNow=cur===iso(today).slice(0,7), td=today.getDate();
   const pend=monthParts(cur).parts.filter(p=>!p.paid).sort((a,b)=>(a.day||99)-(b.day||99)).slice(0,5);
   h+='<div class="sub3">Próximos pagos</div>'+(pend.length?pend.map(p=>'<div class="lg tap" data-pay="'+p.kind+'" data-pn="'+esc(p.name)+'" data-py="'+cur.slice(0,4)+'" data-pm="'+cur+'"><span><b>'+esc(p.name)+'</b><br><span class="muted" style="font-size:12px">'+partWhen(p)+' · '+mxn(p.amt)+'</span></span><span style="flex:none;text-align:right">'+statusHtml(p,isNow,td)+'</span></div>').join('')+'<button class="link" data-go="presup">Ver todos los pagos</button>':'<div class="empty">No hay pagos pendientes este mes. ✓</div>');
@@ -669,7 +691,7 @@ const catsFor=t=>t==='debt'?Object.keys(dyRead(($('tDate').value||iso(today)).sl
 function fillCats(){ const prev=$('tCat').value; const l=catsFor($('tType').value);
   $('tCat').innerHTML=l.length?l.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join(''):'<option value="">Sin deudas en ese año</option>'; if(l.includes(prev)) $('tCat').value=prev; }
 function fillSettings(){
-  $('setBud').innerHTML=CATS.expense.map(c=>'<div class="dcard"><b>'+c+'</b><div class="two" style="margin-top:8px"><div><label>Monto mensual</label><input data-b="'+c+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(state.budget[c]||0)+'"></div><div><label>Tipo</label><select data-ck="'+c+'"><option value="fijo"'+(kindOf(c)==='fijo'?' selected':'')+'>Pago fijo</option><option value="variable"'+(kindOf(c)==='variable'?' selected':'')+'>Gasto variable</option></select></div></div><div style="margin-top:8px"><label>Día(s) de pago (ej. 11 o 15,30)</label><input data-cd="'+c+'" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="off" maxlength="20" placeholder="Sin día, ej. 15, 30" value="'+daysFor('c:'+c).join(',')+'"></div></div>').join('');
+  $('setBud').innerHTML=CATS.expense.map(c=>'<div class="dcard"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>'+c+'</b>'+((state.extraCats||[]).includes(c)?'<button class="icon" data-cx="'+c+'" aria-label="Quitar '+c+'">×</button>':'')+'</div><div class="two" style="margin-top:8px"><div><label>Monto mensual</label><input data-b="'+c+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(state.budget[c]||0)+'"></div><div><label>Tipo</label><select data-ck="'+c+'"><option value="fijo"'+(kindOf(c)==='fijo'?' selected':'')+'>Pago fijo</option><option value="variable"'+(kindOf(c)==='variable'?' selected':'')+'>Gasto variable</option></select></div></div><div style="margin-top:8px"><label>Día(s) de pago (ej. 11 o 15,30)</label><input data-cd="'+c+'" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="off" maxlength="20" placeholder="Sin día, ej. 15, 30" value="'+daysFor('c:'+c).join(',')+'"></div></div>').join('');
   const yrs=new Set(Object.keys(state.debtsY)); const cy=new Date().getFullYear(); [cy,cy+1,+cur.slice(0,4),+dYear].forEach(y=>yrs.add(String(y)));
   $('dYear').innerHTML=[...yrs].sort((x,y)=>y-x).map(y=>'<option'+(y===dYear?' selected':'')+'>'+y+'</option>').join('');
   const dd=dyRead(dYear);
@@ -946,6 +968,25 @@ $('setBox').addEventListener('change',e=>{
   const DDm=state.dueDays||(state.dueDays={}); if(('d:'+old) in DDm){DDm['d:'+val]=DDm['d:'+old]; delete DDm['d:'+old];}
   state.tx.forEach(t=>{if(t.type==='debt'&&t.cat===old&&t.date.slice(0,4)===dYear)t.cat=val;});
   refreshDebts();
+});
+$('setBox').addEventListener('click',e=>{
+  const cx=e.target.dataset&&e.target.dataset.cx;
+  if(cx!==undefined&&cx!==''){
+    if(confirm('¿Quitar "'+cx+'"? Los movimientos que ya registraste se conservan en el Historial.')){
+      state.extraCats=(state.extraCats||[]).filter(x=>x!==cx); delete state.budget[cx]; if(state.catKind) delete state.catKind[cx]; if(state.dueDays) delete state.dueDays['c:'+cx];
+      syncCats(); save(); fillCats(); fillSettings(); render(); toast('Quitado: '+cx);}
+    return;}
+  if(e.target.id==='addCat'){
+    const name=$('newCatName').value.replace(/["'<>&]/g,'').trim();
+    if(!name){say('Escribe el nombre del pago o gasto');return;}
+    if(CATS.expense.some(c=>c.toLowerCase()===name.toLowerCase())){say('Ya existe "'+name+'"');return;}
+    (state.extraCats||(state.extraCats=[])).push(name);
+    state.budget[name]=r2(parseFloat($('newCatAmt').value)||0);
+    (state.catKind||(state.catKind={}))[name]=$('newCatKind').value;
+    const dv=$('newCatDays').value; if(dv.trim()) setDays('c:'+name,dv);
+    $('newCatName').value='';$('newCatAmt').value='';$('newCatDays').value='';
+    syncCats(); save(); fillCats(); fillSettings(); render(); toast('Agregado: '+name+(state.budget[name]?'':' (define el monto arriba)'));
+  }
 });
 $('setBox').addEventListener('click',e=>{
   const x=e.target.dataset&&e.target.dataset.dx;
