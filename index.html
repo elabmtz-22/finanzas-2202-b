@@ -283,6 +283,19 @@ details summary{cursor:pointer;font-weight:700;font-size:19px}
   <div id="cYear"></div>
   <p class="muted" id="yNote"></p>
 </div></div>
+<details class="acc" data-k="eventos">
+<summary>Fechas importantes</summary>
+<div class="accb">
+  <p class="muted" style="margin-top:0">Aguinaldo, fondo de ahorro, viajes, regalos, boda. Aparecen en Inicio con los días que faltan.</p>
+  <div id="evBox"></div>
+  <div class="dcard" style="margin-top:12px">
+    <b>Agregar fecha importante</b>
+    <label for="evName" style="margin-top:8px">Concepto</label><input id="evName" type="text" maxlength="40" placeholder="Ej. Aguinaldo">
+    <div class="two" style="margin-top:8px"><div><label for="evDate">Fecha</label><input id="evDate" type="date"></div><div><label for="evAmt">Monto</label><input id="evAmt" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></div>
+    <label for="evKind" style="margin-top:8px">Tipo</label><select id="evKind"><option value="gasto">Gasto</option><option value="ingreso">Ingreso</option><option value="ahorro">Ingreso al ahorro</option></select>
+    <button class="primary" id="evAdd" style="margin-top:10px">Agregar</button>
+  </div>
+</div></details>
 <details class="acc" data-k="resp">
 <summary>Respaldo de mis datos</summary>
 <div class="accb">
@@ -346,7 +359,14 @@ debt:['Miriam','Emilio','Plata Card','Préstamo $126,000']};
 const TYPES={income:'Ingreso',bonoIn:'Edenred Ingreso',expense:'Gasto',bonoOut:'Edenred gasto',saving:'Ingreso al ahorro',withdraw:'Retiro del ahorro',debt:'Pago de deuda'};
 const BASE_EXP=CATS.expense.slice();
 function syncCats(){CATS.expense=Array.isArray(state.extraCats)?[...state.extraCats]:[...BASE_EXP];}
-const defaults=()=>({tx:[],expected:20200,extraCats:BASE_EXP.slice(),catsV:2,
+const SEED_EVENTS=()=>[
+ {id:'e1',date:'2026-11-17',name:'Viaje Legendarios',kind:'gasto',amount:0,done:false},
+ {id:'e2',date:'2026-12-05',name:'Viaje a Monterrey',kind:'gasto',amount:0,done:false},
+ {id:'e3',date:'2026-12-20',name:'Aguinaldo',kind:'ingreso',amount:15000,done:false},
+ {id:'e4',date:'2026-12-20',name:'Fondo de ahorro',kind:'ahorro',amount:25472,done:false},
+ {id:'e5',date:'2026-12-24',name:'Regalos y fiestas de fin de año',kind:'gasto',amount:10000,done:false},
+ {id:'e6',date:'2028-01-15',name:'Boda',kind:'gasto',amount:0,done:false}];
+const defaults=()=>({tx:[],expected:20200,extraCats:BASE_EXP.slice(),catsV:2,debtInfo:{},events:[],evV:0,
 budget:{'Celular':1200,'Streaming':500,'Iglesia':3000,'Comidas y salidas':3000,'Transporte':1000,'Viajes':0,'Otros':0},
 debtPlanY:{},
 catKind:{'Celular':'fijo','Streaming':'fijo','Iglesia':'fijo','Comidas y salidas':'variable','Transporte':'variable','Viajes':'variable','Otros':'variable'},
@@ -369,11 +389,20 @@ function loadState(raw){const s=JSON.parse(JSON.stringify(raw));
   (s.tx||[]).forEach(t=>{if(t.type==='bonoIn'&&t.cat==='Bono de despensa')t.cat='Recarga Edenred';});
   const m=Object.assign(defaults(),s);
   if(s.catsV!==2){const ex=Array.isArray(s.extraCats)?s.extraCats:[]; m.extraCats=[...BASE_EXP,...ex.filter(c=>!BASE_EXP.includes(c))]; m.catsV=2;}
+  if(!m.debtInfo||typeof m.debtInfo!=='object') m.debtInfo={};
+  if(!Array.isArray(m.events)) m.events=[];
+  if(s.evV!==1){ if(!m.events.length) m.events=SEED_EVENTS(); if(!('Plata Card' in m.debtInfo)) m.debtInfo['Plata Card']={rate:99.9,min:1800,iva:true}; m.evV=1; }
   CATS.expense=[...m.extraCats]; return m;}
 let dYear=String(new Date().getFullYear());
 let dViewY='all';
 const DY=y=>state.debtsY[y]||(state.debtsY[y]={});
 const dyRead=y=>state.debtsY[y]||{};
+const dInfo=n=>{const o=(state.debtInfo||{})[n]||{}; return {rate:+o.rate||0,min:+o.min||0,iva:!!o.iva};};
+const DI=n=>{state.debtInfo||(state.debtInfo={}); return state.debtInfo[n]||(state.debtInfo[n]={rate:0,min:0,iva:false});};
+const EVK={ingreso:['Ingreso','--inc'],ahorro:['Ingreso al ahorro','--sav'],gasto:['Gasto','--exp']};
+const daysTo=d=>Math.round((new Date(d+'T00:00:00')-new Date(iso(today)+'T00:00:00'))/864e5);
+const fmtD=d=>+d.slice(8)+' '+MN[+d.slice(5,7)-1]+' '+d.slice(0,4);
+const evWhen=n=>n===0?'Hoy':n===1?'Mañana':n>1?'Faltan '+n+' días':n===-1?'Pasó ayer':'Pasó hace '+(-n)+' días';
 const DP=y=>(state.debtPlanY||(state.debtPlanY={}))[y]||(state.debtPlanY[y]={});
 try{const s=localStorage.getItem(KEY); if(s) state=loadState(JSON.parse(s));}catch(e){}
 
@@ -504,7 +533,7 @@ function render(){
       const left=Math.max(r2(ini-paid),0), pct=ini?Math.min(100,paid/ini*100):0, col=pcol(pct,left);
       const ptxt=(left<=0&&ini>0?100:Math.floor(pct*10)/10)+'%';
       let cdHtml=''; if(y===String(today.getFullYear())){const cd=left<=0?{t:'Deuda liquidada',c:'var(--inc)',i:'✓ '}:debtCountdown(d); cdHtml='<div style="font-size:15px;margin-top:5px;font-weight:600;color:'+cd.c+'">'+cd.i+cd.t+'</div>';}
-      return '<div class="debt tap" data-pay="deuda" data-pn="'+esc(d)+'" data-py="'+y+'" data-pm="'+(cur.slice(0,4)===y?cur:'')+'"><div class="top"><span><b>'+esc(d)+'</b><br><span class="muted" style="font-size:14px">Deuda '+mxn(ini)+' · pagado el '+ptxt+'</span></span><span style="text-align:right;color:'+col+';font-weight:700">Pendiente<br>'+mxn(left)+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:14px;margin-top:3px">Abonado: '+mxn(paid)+' de '+mxn(ini)+' · Resta '+mxn(left)+'</div>'+cdHtml+'<div style="font-size:14px;margin-top:4px;color:var(--accent);font-weight:700">Toca para abonar ›</div></div>';}).join('');
+      return '<div class="debt tap" data-pay="deuda" data-pn="'+esc(d)+'" data-py="'+y+'" data-pm="'+(cur.slice(0,4)===y?cur:'')+'"><div class="top"><span><b>'+esc(d)+'</b><br><span class="muted" style="font-size:14px">Deuda '+mxn(ini)+' · pagado el '+ptxt+'</span></span><span style="text-align:right;color:'+col+';font-weight:700">Pendiente<br>'+mxn(left)+'</span></div>'+bar2(pct,col)+'<div class="muted" style="font-size:14px;margin-top:3px">Abonado: '+mxn(paid)+' de '+mxn(ini)+' · Resta '+mxn(left)+'</div>'+infoHtml(d,left,y)+cdHtml+'<div style="font-size:14px;margin-top:4px;color:var(--accent);font-weight:700">Toca para abonar ›</div></div>';}).join('');
     return '<div style="margin-bottom:22px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-bottom:10px"><b style="font-size:18px">'+y+'</b><span class="muted" style="text-align:right">'+(names.length?('Pendiente '+mxn(Math.max(r2(ti-tp),0))+' de '+mxn(ti)):'')+'</span></div>'
       +(rows||'<div class="empty">Aún no hay deudas de '+y+'. Agrégalas en "Ajuste de presupuesto y deudas".</div>')+'</div>';
   }).join('');
@@ -618,6 +647,15 @@ function monthParts(ym){
   });
   return {parts,noPlan,planDebt};
 }
+function infoHtml(name,left,y){
+  const i=dInfo(name); if(!(left>0)||!(i.rate>0||i.min>0)) return '';
+  const intr=r2(left*i.rate/100/12*(i.iva?1.16:1)), pm=r2(((state.debtPlanY||{})[y]||{})[name]);
+  let h='<div style="font-size:14px;margin-top:4px">';
+  if(i.rate>0) h+='Tasa '+i.rate+'% anual · Intereses aprox. <b style="color:var(--exp)">'+mxn(intr)+'</b> al mes'+(i.iva?' (con IVA)':'');
+  if(i.min>0) h+=(i.rate>0?'<br>':'')+'Pago mínimo <b>'+mxn(i.min)+'</b> al mes';
+  if(i.min>0&&pm>0&&pm<i.min) h+='<br><b style="color:var(--exp)">⚠ Tu pago mensual ('+mxn(pm)+') está por debajo del mínimo</b>';
+  return h+'</div>';
+}
 function debtCountdown(name){
   const td=today.getDate(), ymNow=iso(today).slice(0,7), days=daysFor('d:'+name);
   if(!days.length) return {t:'Sin día de pago definido (agrégalo en Más › Ajustes)',c:'var(--mute)',i:'🗓 '};
@@ -692,6 +730,9 @@ function renderTablero(){
   const isNow=cur===iso(today).slice(0,7), td=today.getDate();
   const pend=monthParts(cur).parts.filter(p=>!p.paid).sort((a,b)=>(a.day||99)-(b.day||99)).slice(0,5);
   h+='<div class="sub3">Próximos pagos</div>'+(pend.length?pend.map(p=>'<div class="lg tap" data-pay="'+p.kind+'" data-pn="'+esc(p.name)+'" data-py="'+cur.slice(0,4)+'" data-pm="'+cur+'"><span><b>'+esc(p.name)+'</b><br><span class="muted" style="font-size:12px">'+partWhen(p)+' · '+mxn(p.amt)+'</span><br><span style="font-size:13px">'+abRest(p)+'</span></span><span style="flex:none;text-align:right">'+statusHtml(p,isNow,td)+'</span></div>').join('')+'<button class="link" data-go="presup">Ver todos los pagos</button>':'<div class="empty">No hay pagos pendientes este mes. ✓</div>');
+  {const evs=(state.events||[]).filter(e=>!e.done).sort((a,b)=>a.date.localeCompare(b.date)||a.name.localeCompare(b.name)).slice(0,5);
+   h+='<div class="sub3">Fechas importantes</div><div class="tap" data-evgo="1">'+(evs.length?evs.map(e=>{const n=daysTo(e.date), k=EVK[e.kind]||EVK.gasto, sign=e.kind==='gasto'?'−':'+';
+     return '<div class="lg"><span><b>'+esc(e.name)+'</b><br><span class="muted" style="font-size:13px">'+fmtD(e.date)+' · <span style="color:'+(n<0?'var(--exp)':'inherit')+'">'+evWhen(n)+'</span></span></span><span style="text-align:right;font-weight:700;color:var(var(--x))">'.replace('var(var(--x))','var('+k[1]+')')+(e.amount>0?sign+mxn(e.amount):'<span class="muted" style="font-weight:400;font-size:13px">Falta el monto</span>')+'</span></div>';}).join(''):'<div class="empty">No tienes fechas pendientes. Agrégalas en Más › Fechas importantes.</div>')+'<div style="font-size:14px;margin-top:6px;color:var(--accent);font-weight:700">Ver o editar ›</div></div>';}
   $('tablero').innerHTML=h;
 }
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -704,7 +745,7 @@ function fillSettings(){
   const yrs=new Set(Object.keys(state.debtsY)); const cy=new Date().getFullYear(); [cy,cy+1,+cur.slice(0,4),+dYear].forEach(y=>yrs.add(String(y)));
   $('dYear').innerHTML=[...yrs].sort((x,y)=>y-x).map(y=>'<option'+(y===dYear?' selected':'')+'>'+y+'</option>').join('');
   const dd=dyRead(dYear);
-  $('setDebt').innerHTML=Object.keys(dd).map((n,i)=>'<div class="dcard"><div class="top2"><input data-dn="'+i+'" type="text" maxlength="30" value="'+esc(n)+'" aria-label="Nombre de la deuda"><button class="icon" data-dx="'+i+'" aria-label="Quitar deuda">×</button></div><div class="two"><div><label>Saldo al empezar '+dYear+'</label><input data-d="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(dd[n]||0)+'" aria-label="Saldo inicial"></div><div><label>Pago mensual</label><input data-dp="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+((DP(dYear)[n])||0)+'" aria-label="Pago mensual"></div></div><div style="margin-top:8px"><label>Día(s) de pago (ej. 4 o 15,30)</label><input data-dd="'+i+'" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="off" maxlength="20" placeholder="Sin día, ej. 15, 30" value="'+daysFor('d:'+n).join(',')+'"></div></div>').join('')||'<div class="empty">No hay deudas registradas en '+dYear+'.</div>';
+  $('setDebt').innerHTML=Object.keys(dd).map((n,i)=>'<div class="dcard"><div class="top2"><input data-dn="'+i+'" type="text" maxlength="30" value="'+esc(n)+'" aria-label="Nombre de la deuda"><button class="icon" data-dx="'+i+'" aria-label="Quitar deuda">×</button></div><div class="two"><div><label>Saldo al empezar '+dYear+'</label><input data-d="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(dd[n]||0)+'" aria-label="Saldo inicial"></div><div><label>Pago mensual</label><input data-dp="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+((DP(dYear)[n])||0)+'" aria-label="Pago mensual"></div></div><div class="two" style="margin-top:8px"><div><label>Tasa de interés anual (%)</label><input data-dr="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(dInfo(n).rate||0)+'" aria-label="Tasa de interés anual"></div><div><label>Pago mínimo mensual</label><input data-dm="'+i+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(dInfo(n).min||0)+'" aria-label="Pago mínimo"></div></div><div style="margin-top:8px"><label style="display:flex;align-items:center;gap:8px"><input data-di="'+i+'" type="checkbox" style="width:24px;height:24px;flex:none"'+(dInfo(n).iva?' checked':'')+'> Cobra IVA (16%) sobre los intereses</label></div><div style="margin-top:8px"><label>Fecha límite de pago: día(s) del mes (ej. 3 o 15,30)</label><input data-dd="'+i+'" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="off" maxlength="20" placeholder="Sin día, ej. 15, 30" value="'+daysFor('d:'+n).join(',')+'"></div></div>').join('')||'<div class="empty">No hay deudas registradas en '+dYear+'.</div>';
   $('exp').value=state.expected;
 }
 
@@ -790,6 +831,9 @@ $('setBox').addEventListener('input',e=>{
   else if(t.dataset.cd!==undefined){setDays('c:'+t.dataset.cd,t.value);}
   else if(t.dataset.dd!==undefined){const k=Object.keys(DY(dYear))[+t.dataset.dd]; if(k!==undefined) setDays('d:'+k,t.value);}
   else if(t.dataset.dp!==undefined){const k=Object.keys(DY(dYear))[+t.dataset.dp]; if(k!==undefined) DP(dYear)[k]=v;}
+  else if(t.dataset.dr!==undefined){const k=Object.keys(DY(dYear))[+t.dataset.dr]; if(k!==undefined) DI(k).rate=v;}
+  else if(t.dataset.dm!==undefined){const k=Object.keys(DY(dYear))[+t.dataset.dm]; if(k!==undefined) DI(k).min=v;}
+  else if(t.dataset.di!==undefined){const k=Object.keys(DY(dYear))[+t.dataset.di]; if(k!==undefined) DI(k).iva=t.checked;}
   else if(t.dataset.d!==undefined){const k=Object.keys(DY(dYear))[+t.dataset.d]; if(k!==undefined) DY(dYear)[k]=v;}
   else if(t.id==='exp') state.expected=v;
   save(); render();
@@ -840,7 +884,7 @@ function bkRestore(text){
   const d=o&&o.data?o.data:o;
   if(!d||!Array.isArray(d.tx)){say('Eso no parece un respaldo de Mis finanzas');return;}
   if(!confirm('Esto reemplazará tus datos actuales por el respaldo ('+d.tx.length+' movimientos). ¿Continuar?')) return;
-  state=loadState(d); save(); fillCats(); fillSettings(); render(); bkLabel(); bkLabel(); say('Datos restaurados');
+  state=loadState(d); save(); fillCats(); fillSettings(); fillEvents(); render(); bkLabel(); bkLabel(); say('Datos restaurados');
 }
 $('bkFile').onchange=e=>{const f=e.target.files[0]; if(!f) return; f.text().then(bkRestore).catch(()=>say('No pude leer el archivo')); e.target.value='';};
 $('bkPaste').onclick=()=>{const t=$('bkText').value.trim(); if(!t){say('Pega primero el texto del respaldo');return;} bkRestore(t); $('bkText').value='';};
@@ -986,6 +1030,31 @@ $('payWrap').addEventListener('input',e=>{if(e.target.id==='pAmt') payPreview();
 document.addEventListener('click',e=>{const r=e.target.closest&&e.target.closest('[data-pay]'); if(r) openPay(r.dataset.pay,r.dataset.pn,r.dataset.py,r.dataset.pm||null);});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('payWrap').hidden) closePay();});
 
+function fillEvents(){
+  const l=(state.events||[]).slice().sort((a,b)=>a.date.localeCompare(b.date)||a.name.localeCompare(b.name));
+  $('evBox').innerHTML=l.length?l.map(e=>'<div class="dcard"><div class="top2"><input data-ef="name" data-eid="'+e.id+'" type="text" maxlength="40" value="'+esc(e.name)+'" aria-label="Concepto" style="font-weight:700"><button class="icon" data-ex="'+e.id+'" aria-label="Quitar">×</button></div>'
+    +'<div class="two"><div><label>Fecha</label><input data-ef="date" data-eid="'+e.id+'" type="date" value="'+e.date+'"></div><div><label>Monto</label><input data-ef="amount" data-eid="'+e.id+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(e.amount||0)+'"></div></div>'
+    +'<div class="two" style="margin-top:8px"><div><label>Tipo</label><select data-ef="kind" data-eid="'+e.id+'"><option value="gasto"'+(e.kind==='gasto'?' selected':'')+'>Gasto</option><option value="ingreso"'+(e.kind==='ingreso'?' selected':'')+'>Ingreso</option><option value="ahorro"'+(e.kind==='ahorro'?' selected':'')+'>Ingreso al ahorro</option></select></div>'
+    +'<div><label style="display:flex;align-items:center;gap:8px;margin-top:22px"><input data-ef="done" data-eid="'+e.id+'" type="checkbox" style="width:24px;height:24px;flex:none"'+(e.done?' checked':'')+'> Ya pasó</label></div></div></div>').join(''):'<div class="empty">Aún no tienes fechas importantes.</div>';
+}
+$('evBox').addEventListener('input',e=>{const t=e.target, id=t.dataset.eid, f=t.dataset.ef; if(!id) return;
+  const ev=state.events.find(x=>x.id===id); if(!ev) return;
+  if(f==='name') ev.name=t.value.replace(/["'<>&]/g,'').slice(0,40);
+  else if(f==='amount') ev.amount=r2(parseFloat(t.value)||0);
+  else if(f==='date'){ if(!t.value) return; ev.date=t.value; }
+  else if(f==='kind') ev.kind=t.value;
+  else if(f==='done') ev.done=t.checked;
+  save(); render();});
+$('evBox').addEventListener('change',e=>{ if(e.target.dataset.ef==='date'||e.target.dataset.ef==='done') fillEvents(); });
+$('evBox').addEventListener('click',e=>{const id=e.target.dataset&&e.target.dataset.ex; if(!id) return;
+  const ev=state.events.find(x=>x.id===id); if(!ev) return;
+  if(confirm('¿Quitar "'+ev.name+'"?')){state.events=state.events.filter(x=>x.id!==id); save(); fillEvents(); render(); toast('Fecha quitada');}});
+$('evAdd').addEventListener('click',()=>{const name=$('evName').value.replace(/["'<>&]/g,'').trim(), date=$('evDate').value;
+  if(!name){say('Escribe el concepto');return;} if(!date){say('Elige la fecha');return;}
+  state.events.push({id:'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),date,name:name.slice(0,40),kind:$('evKind').value,amount:r2(parseFloat($('evAmt').value)||0),done:false});
+  $('evName').value='';$('evAmt').value='';$('evDate').value=''; save(); fillEvents(); render(); say('Fecha agregada');});
+document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-evgo]'); if(!g) return;
+  goTab('mas'); const d=document.querySelector('details[data-k=eventos]'); if(d){d.open=true; setTimeout(()=>d.scrollIntoView({block:'start'}),60);} });
 function refreshDebts(){save();fillCats();fillSettings();render();}
 $('setBox').addEventListener('change',e=>{
   const i=e.target.dataset.dn; if(i===undefined) return;
@@ -995,6 +1064,7 @@ $('setBox').addEventListener('change',e=>{
   const nd={}; keys.forEach(k=>{nd[k===old?val:k]=D[k];}); state.debtsY[dYear]=nd;
   const P=DP(dYear); if(old in P){P[val]=P[old]; delete P[old];}
   const DDm=state.dueDays||(state.dueDays={}); if(('d:'+old) in DDm){DDm['d:'+val]=DDm['d:'+old]; delete DDm['d:'+old];}
+  if(state.debtInfo&&old in state.debtInfo){state.debtInfo[val]=state.debtInfo[old]; delete state.debtInfo[old];}
   state.tx.forEach(t=>{if(t.type==='debt'&&t.cat===old&&t.date.slice(0,4)===dYear)t.cat=val;});
   refreshDebts();
 });
@@ -1043,7 +1113,7 @@ $('setBox').addEventListener('click',e=>{
   }
 });
 $('tDate').value=iso(today);
-fillCats(); fillSettings(); render();
+fillCats(); fillSettings(); fillEvents(); render();
 
 const UIKEY='mis-finanzas-ui'; let ui={}; try{ui=JSON.parse(localStorage.getItem(UIKEY)||'{}');}catch(e){}
 document.querySelectorAll('details.acc').forEach(d=>{const k=d.dataset.k; if(k in ui) d.open=!!ui[k];
@@ -1068,7 +1138,7 @@ goTab(ui.tab||'inicio');
     const id=await u.id(); if(!id) return;
     ref=db.collection('data/users/'+id).doc('finanzas');
     const snap=await ref.get();
-    if(snap.exists){state=loadState(snap.data());fillSettings();render();}
+    if(snap.exists){state=loadState(snap.data());fillSettings();fillEvents();render();}
     else if(state.tx.length){ref.set(JSON.parse(JSON.stringify(state))).catch(()=>{});}
   }catch(e){ref=null;}
 })();
