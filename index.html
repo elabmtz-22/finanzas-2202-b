@@ -366,10 +366,10 @@ const SEED_EVENTS=()=>[
  {id:'e4',date:'2026-12-20',name:'Fondo de ahorro',kind:'ahorro',amount:25472,done:false},
  {id:'e5',date:'2026-12-24',name:'Regalos y fiestas de fin de año',kind:'gasto',amount:10000,done:false},
  {id:'e6',date:'2028-01-15',name:'Boda',kind:'gasto',amount:0,done:false}];
-const defaults=()=>({tx:[],expected:20200,extraCats:BASE_EXP.slice(),catsV:2,debtInfo:{},events:[],evV:0,
+const defaults=()=>({tx:[],expected:20200,extraCats:BASE_EXP.slice(),catsV:2,debtInfo:{},events:[],evV:0,iglV:1,
 budget:{'Celular':1200,'Streaming':500,'Iglesia':3000,'Comidas y salidas':3000,'Transporte':1000,'Viajes':0,'Otros':0},
 debtPlanY:{},
-catKind:{'Celular':'fijo','Streaming':'fijo','Iglesia':'fijo','Comidas y salidas':'variable','Transporte':'variable','Viajes':'variable','Otros':'variable'},
+catKind:{'Celular':'fijo','Streaming':'fijo','Iglesia':'variable','Comidas y salidas':'variable','Transporte':'variable','Viajes':'variable','Otros':'variable'},
 dueDays:{'c:Celular':[11],'c:Streaming':[15],'c:Iglesia':[15,30],'d:Plata Card':[4]},
 debtsY:{[new Date().getFullYear()]:{'Miriam':0,'Emilio':0,'Plata Card':0,'Préstamo $126,000':0}}});
 const KEY='mis-finanzas-v1';
@@ -392,6 +392,7 @@ function loadState(raw){const s=JSON.parse(JSON.stringify(raw));
   if(!m.debtInfo||typeof m.debtInfo!=='object') m.debtInfo={};
   if(!Array.isArray(m.events)) m.events=[];
   if(s.evV!==1){ if(!m.events.length) m.events=SEED_EVENTS(); if(!('Plata Card' in m.debtInfo)) m.debtInfo['Plata Card']={rate:99.9,min:1800,iva:true}; m.evV=1; }
+  if(s.iglV!==1){ if(m.extraCats.includes('Iglesia')){(m.catKind||(m.catKind={}))['Iglesia']='variable';} m.iglV=1; }
   CATS.expense=[...m.extraCats]; return m;}
 let dYear=String(new Date().getFullYear());
 let dViewY='all';
