@@ -292,7 +292,7 @@ details summary{cursor:pointer;font-weight:700;font-size:19px}
     <b>Agregar fecha importante</b>
     <label for="evName" style="margin-top:8px">Concepto</label><input id="evName" type="text" maxlength="40" placeholder="Ej. Aguinaldo">
     <div class="two" style="margin-top:8px"><div><label for="evDate">Fecha</label><input id="evDate" type="date"></div><div><label for="evAmt">Monto</label><input id="evAmt" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div></div>
-    <label for="evKind" style="margin-top:8px">Tipo</label><select id="evKind"><option value="gasto">Gasto</option><option value="ingreso">Ingreso</option><option value="ahorro">Ingreso al ahorro</option></select>
+    <label for="evKind" style="margin-top:8px">Tipo</label><select id="evKind"><option value="gasto">Gasto</option><option value="ingreso">Ingreso</option><option value="ahorro">Ingreso al ahorro</option><option value="meta">Meta de ahorro</option></select>
     <button class="primary" id="evAdd" style="margin-top:10px">Agregar</button>
   </div>
 </div></details>
@@ -360,13 +360,17 @@ const TYPES={income:'Ingreso',bonoIn:'Edenred Ingreso',expense:'Gasto',bonoOut:'
 const BASE_EXP=CATS.expense.slice();
 function syncCats(){CATS.expense=Array.isArray(state.extraCats)?[...state.extraCats]:[...BASE_EXP];}
 const SEED_EVENTS=()=>[
- {id:'e1',date:'2026-11-17',name:'Viaje Legendarios',kind:'gasto',amount:0,done:false},
- {id:'e2',date:'2026-12-05',name:'Viaje a Monterrey',kind:'gasto',amount:0,done:false},
+ {id:'e1',date:'2026-11-17',name:'Viaje Legendarios',kind:'gasto',amount:4500,done:false},
+ {id:'e7',date:'2026-11-17',name:'Viáticos Legendarios (4 días)',kind:'gasto',amount:2000,done:false},
+ {id:'e2',date:'2026-12-05',name:'Viaje a Monterrey',kind:'gasto',amount:2000,done:false},
  {id:'e3',date:'2026-12-20',name:'Aguinaldo',kind:'ingreso',amount:15000,done:false},
  {id:'e4',date:'2026-12-20',name:'Fondo de ahorro',kind:'ahorro',amount:25472,done:false},
- {id:'e5',date:'2026-12-24',name:'Regalos y fiestas de fin de año',kind:'gasto',amount:10000,done:false},
- {id:'e6',date:'2028-01-15',name:'Boda',kind:'gasto',amount:0,done:false}];
-const defaults=()=>({tx:[],expected:20200,extraCats:BASE_EXP.slice(),catsV:2,debtInfo:{},events:[],evV:0,iglV:1,
+ {id:'e8',date:'2026-12-20',name:'Abono a deudas con el fondo de ahorro',kind:'gasto',amount:22000,done:false},
+ {id:'e5',date:'2026-12-24',name:'Regalos y fiestas de fin de año',kind:'gasto',amount:6000,done:false},
+ {id:'e9',date:'2027-01-01',name:'Fecha límite: pagar Banamex y Banorte',kind:'gasto',amount:28516.45,done:false},
+ {id:'e10',date:'2027-09-01',name:'Ahorro de la boda listo',kind:'meta',amount:70000,done:false},
+ {id:'e6',date:'2027-10-02',name:'Boda',kind:'gasto',amount:70000,done:false}];
+const defaults=()=>({tx:[],expected:20200,extraCats:BASE_EXP.slice(),catsV:2,debtInfo:{},events:[],evV:2,iglV:1,
 budget:{'Celular':1200,'Streaming':500,'Iglesia':3000,'Comidas y salidas':3000,'Transporte':1000,'Viajes':0,'Otros':0},
 debtPlanY:{},
 catKind:{'Celular':'fijo','Streaming':'fijo','Iglesia':'variable','Comidas y salidas':'variable','Transporte':'variable','Viajes':'variable','Otros':'variable'},
@@ -391,7 +395,12 @@ function loadState(raw){const s=JSON.parse(JSON.stringify(raw));
   if(s.catsV!==2){const ex=Array.isArray(s.extraCats)?s.extraCats:[]; m.extraCats=[...BASE_EXP,...ex.filter(c=>!BASE_EXP.includes(c))]; m.catsV=2;}
   if(!m.debtInfo||typeof m.debtInfo!=='object') m.debtInfo={};
   if(!Array.isArray(m.events)) m.events=[];
-  if(s.evV!==1){ if(!m.events.length) m.events=SEED_EVENTS(); if(!('Plata Card' in m.debtInfo)) m.debtInfo['Plata Card']={rate:99.9,min:1800,iva:true}; m.evV=1; }
+  if(s.evV!==2){
+    if(!('Plata Card' in m.debtInfo)) m.debtInfo['Plata Card']={rate:99.9,min:1800,iva:true};
+    const seeds=SEED_EVENTS();
+    if(!m.events.length) m.events=seeds;
+    else seeds.forEach(sd=>{const i=m.events.findIndex(x=>x.id===sd.id); if(i>=0) m.events[i]=Object.assign({},sd,{done:!!m.events[i].done}); else m.events.push(sd);});
+    m.evV=2; }
   if(s.iglV!==1){ if(m.extraCats.includes('Iglesia')){(m.catKind||(m.catKind={}))['Iglesia']='variable';} m.iglV=1; }
   CATS.expense=[...m.extraCats]; return m;}
 let dYear=String(new Date().getFullYear());
@@ -400,7 +409,7 @@ const DY=y=>state.debtsY[y]||(state.debtsY[y]={});
 const dyRead=y=>state.debtsY[y]||{};
 const dInfo=n=>{const o=(state.debtInfo||{})[n]||{}; return {rate:+o.rate||0,min:+o.min||0,iva:!!o.iva};};
 const DI=n=>{state.debtInfo||(state.debtInfo={}); return state.debtInfo[n]||(state.debtInfo[n]={rate:0,min:0,iva:false});};
-const EVK={ingreso:['Ingreso','--inc'],ahorro:['Ingreso al ahorro','--sav'],gasto:['Gasto','--exp']};
+const EVK={ingreso:['Ingreso','--inc'],ahorro:['Ingreso al ahorro','--sav'],gasto:['Gasto','--exp'],meta:['Meta de ahorro','--sav']};
 const daysTo=d=>Math.round((new Date(d+'T00:00:00')-new Date(iso(today)+'T00:00:00'))/864e5);
 const fmtD=d=>+d.slice(8)+' '+MN[+d.slice(5,7)-1]+' '+d.slice(0,4);
 const evWhen=n=>n===0?'Hoy':n===1?'Mañana':n>1?'Faltan '+n+' días':n===-1?'Pasó ayer':'Pasó hace '+(-n)+' días';
@@ -732,7 +741,7 @@ function renderTablero(){
   const pend=monthParts(cur).parts.filter(p=>!p.paid).sort((a,b)=>(a.day||99)-(b.day||99)).slice(0,5);
   h+='<div class="sub3">Próximos pagos</div>'+(pend.length?pend.map(p=>'<div class="lg tap" data-pay="'+p.kind+'" data-pn="'+esc(p.name)+'" data-py="'+cur.slice(0,4)+'" data-pm="'+cur+'"><span><b>'+esc(p.name)+'</b><br><span class="muted" style="font-size:12px">'+partWhen(p)+' · '+mxn(p.amt)+'</span><br><span style="font-size:13px">'+abRest(p)+'</span></span><span style="flex:none;text-align:right">'+statusHtml(p,isNow,td)+'</span></div>').join('')+'<button class="link" data-go="presup">Ver todos los pagos</button>':'<div class="empty">No hay pagos pendientes este mes. ✓</div>');
   {const evs=(state.events||[]).filter(e=>!e.done).sort((a,b)=>a.date.localeCompare(b.date)||a.name.localeCompare(b.name)).slice(0,5);
-   h+='<div class="sub3">Fechas importantes</div><div class="tap" data-evgo="1">'+(evs.length?evs.map(e=>{const n=daysTo(e.date), k=EVK[e.kind]||EVK.gasto, sign=e.kind==='gasto'?'−':'+';
+   h+='<div class="sub3">Fechas importantes</div><div class="tap" data-evgo="1">'+(evs.length?evs.map(e=>{const n=daysTo(e.date), k=EVK[e.kind]||EVK.gasto, sign=e.kind==='gasto'?'−':(e.kind==='meta'?'':'+');
      return '<div class="lg"><span><b>'+esc(e.name)+'</b><br><span class="muted" style="font-size:13px">'+fmtD(e.date)+' · <span style="color:'+(n<0?'var(--exp)':'inherit')+'">'+evWhen(n)+'</span></span></span><span style="text-align:right;font-weight:700;color:var(var(--x))">'.replace('var(var(--x))','var('+k[1]+')')+(e.amount>0?sign+mxn(e.amount):'<span class="muted" style="font-weight:400;font-size:13px">Falta el monto</span>')+'</span></div>';}).join(''):'<div class="empty">No tienes fechas pendientes. Agrégalas en Más › Fechas importantes.</div>')+'<div style="font-size:14px;margin-top:6px;color:var(--accent);font-weight:700">Ver o editar ›</div></div>';}
   $('tablero').innerHTML=h;
 }
@@ -1035,7 +1044,7 @@ function fillEvents(){
   const l=(state.events||[]).slice().sort((a,b)=>a.date.localeCompare(b.date)||a.name.localeCompare(b.name));
   $('evBox').innerHTML=l.length?l.map(e=>'<div class="dcard"><div class="top2"><input data-ef="name" data-eid="'+e.id+'" type="text" maxlength="40" value="'+esc(e.name)+'" aria-label="Concepto" style="font-weight:700"><button class="icon" data-ex="'+e.id+'" aria-label="Quitar">×</button></div>'
     +'<div class="two"><div><label>Fecha</label><input data-ef="date" data-eid="'+e.id+'" type="date" value="'+e.date+'"></div><div><label>Monto</label><input data-ef="amount" data-eid="'+e.id+'" type="number" min="0" step="0.01" inputmode="decimal" value="'+(e.amount||0)+'"></div></div>'
-    +'<div class="two" style="margin-top:8px"><div><label>Tipo</label><select data-ef="kind" data-eid="'+e.id+'"><option value="gasto"'+(e.kind==='gasto'?' selected':'')+'>Gasto</option><option value="ingreso"'+(e.kind==='ingreso'?' selected':'')+'>Ingreso</option><option value="ahorro"'+(e.kind==='ahorro'?' selected':'')+'>Ingreso al ahorro</option></select></div>'
+    +'<div class="two" style="margin-top:8px"><div><label>Tipo</label><select data-ef="kind" data-eid="'+e.id+'"><option value="gasto"'+(e.kind==='gasto'?' selected':'')+'>Gasto</option><option value="ingreso"'+(e.kind==='ingreso'?' selected':'')+'>Ingreso</option><option value="ahorro"'+(e.kind==='ahorro'?' selected':'')+'>Ingreso al ahorro</option><option value="meta"'+(e.kind==='meta'?' selected':'')+'>Meta de ahorro</option></select></div>'
     +'<div><label style="display:flex;align-items:center;gap:8px;margin-top:22px"><input data-ef="done" data-eid="'+e.id+'" type="checkbox" style="width:24px;height:24px;flex:none"'+(e.done?' checked':'')+'> Ya pasó</label></div></div></div>').join(''):'<div class="empty">Aún no tienes fechas importantes.</div>';
 }
 $('evBox').addEventListener('input',e=>{const t=e.target, id=t.dataset.eid, f=t.dataset.ef; if(!id) return;
