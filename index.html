@@ -365,12 +365,12 @@ const SEED_EVENTS=()=>[
  {id:'e2',date:'2026-12-05',name:'Viaje a Monterrey',kind:'gasto',amount:2000,done:false},
  {id:'e3',date:'2026-12-20',name:'Aguinaldo',kind:'ingreso',amount:15000,done:false},
  {id:'e4',date:'2026-12-20',name:'Fondo de ahorro',kind:'ahorro',amount:25472,done:false},
- {id:'e8',date:'2026-12-20',name:'Abono a deudas con el fondo de ahorro',kind:'gasto',amount:22000,done:false},
  {id:'e5',date:'2026-12-24',name:'Regalos y fiestas de fin de año',kind:'gasto',amount:6000,done:false},
- {id:'e9',date:'2027-01-01',name:'Fecha límite: pagar Banamex y Banorte',kind:'gasto',amount:28516.45,done:false},
- {id:'e10',date:'2027-09-01',name:'Ahorro de la boda listo',kind:'meta',amount:70000,done:false},
- {id:'e6',date:'2027-10-02',name:'Boda',kind:'gasto',amount:70000,done:false}];
-const defaults=()=>({tx:[],expected:20200,extraCats:BASE_EXP.slice(),catsV:2,debtInfo:{},events:[],evV:2,iglV:1,
+ {id:'e10',date:'2027-09-01',name:'Ahorro de la boda y el smoking listo',kind:'meta',amount:75000,done:false},
+ {id:'e11',date:'2027-09-01',name:'Smoking para la boda',kind:'gasto',amount:10000,done:false},
+ {id:'e12',date:'2026-10-31',name:'Pago del salón (parte de la boda)',kind:'gasto',amount:5000,done:false},
+ {id:'e6',date:'2027-10-02',name:'Boda',kind:'gasto',amount:65000,done:false}];
+const defaults=()=>({tx:[],expected:20200,extraCats:BASE_EXP.slice(),catsV:2,debtInfo:{},events:[],evV:4,iglV:1,
 budget:{'Celular':1200,'Streaming':500,'Iglesia':3000,'Comidas y salidas':3000,'Transporte':1000,'Viajes':0,'Otros':0},
 debtPlanY:{},
 catKind:{'Celular':'fijo','Streaming':'fijo','Iglesia':'variable','Comidas y salidas':'variable','Transporte':'variable','Viajes':'variable','Otros':'variable'},
@@ -395,12 +395,15 @@ function loadState(raw){const s=JSON.parse(JSON.stringify(raw));
   if(s.catsV!==2){const ex=Array.isArray(s.extraCats)?s.extraCats:[]; m.extraCats=[...BASE_EXP,...ex.filter(c=>!BASE_EXP.includes(c))]; m.catsV=2;}
   if(!m.debtInfo||typeof m.debtInfo!=='object') m.debtInfo={};
   if(!Array.isArray(m.events)) m.events=[];
-  if(s.evV!==2){
+  if(s.evV!==4){
     if(!('Plata Card' in m.debtInfo)) m.debtInfo['Plata Card']={rate:99.9,min:1800,iva:true};
     const seeds=SEED_EVENTS();
     if(!m.events.length) m.events=seeds;
     else seeds.forEach(sd=>{const i=m.events.findIndex(x=>x.id===sd.id); if(i>=0) m.events[i]=Object.assign({},sd,{done:!!m.events[i].done}); else m.events.push(sd);});
-    m.evV=2; }
+    m.events=m.events.filter(x=>x.id!=='e8'&&x.id!=='e9'); // ya no hay abono extra ni fecha límite de Banamex/Banorte (se pagan después de la boda)
+    m.dueDays=m.dueDays||{}; m.dueDays['d:Plata Card']=[3];
+    if(m.debtsY&&m.debtsY['2026']&&m.debtsY['2026']['Plata Card']===15330) m.debtsY['2026']['Plata Card']=15329.34;
+    m.evV=4; }
   if(s.iglV!==1){ if(m.extraCats.includes('Iglesia')){(m.catKind||(m.catKind={}))['Iglesia']='variable';} m.iglV=1; }
   CATS.expense=[...m.extraCats]; return m;}
 let dYear=String(new Date().getFullYear());
